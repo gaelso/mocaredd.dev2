@@ -1,0 +1,46 @@
+Package: mocaredd.dev2
+Title: Development version of mocaredd: Monte Carlo Simulation for REDD+ uncertainty analysis
+Version: 1.0
+Authors@R: c(
+    person("Gael", "Sola", , "gaelsola.pro@gmail.com", role = c("aut", "cre")),
+    person("Javier", "Garcia Perez", , , role = c("aut")),
+    person("Jimena", "Saucedo Miranda", , , role = c("ctb")),
+    person("Lauri", "Vesa", , , role = c("ctb"))
+    )
+Description: functions and a shiny app for (1) setting up, (2) running Monte Carlo 
+    Simulations and (3) producing improved estimates of and confidence intervals around 
+    greenhouse gas emissions and emission reductions from the forestry sector.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Suggests: 
+    knitr,
+    quarto,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/openforis/mocaredd, https://openforis.github.io/mocaredd/
+BugReports: https://github.com/openforis/mocaredd/issues
+Depends:
+    R (>= 4.1.0)
+Imports: 
+    bslib,
+    bsicons,
+    dplyr,
+    stringr,
+    tidyr,
+    ggplot2,
+    purrr,
+    rlang,
+    shiny,
+    shiny.i18n,
+    shinyjs,
+    shinyWidgets,
+    htmltools,
+    gt,
+    stats,
+    chromote,
+    scales,
+    readxl
