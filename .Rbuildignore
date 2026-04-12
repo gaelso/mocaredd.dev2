@@ -1,3 +1,5 @@
 ^mocaredd\.dev\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
+^\.positai$
+^\.claude$
