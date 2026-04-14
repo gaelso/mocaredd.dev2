@@ -26,22 +26,6 @@ shiny_run_mocaredd_dev2 <- function(...) {
   ## GLOBAL ####################################################################
   ##
 
-  ## + list of categories for checks ===========================================
-  # app_checklist <- list(
-  #   xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stocks"),
-  #   cat_cunits = c("DM", "C"),
-  #   cat_cpools = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
-  #   cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
-  #   cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
-  #   cat_pdf    = c("normal", "beta"),
-  #   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "c_fraction_se",  "c_fraction_pdf", "dg_ext", "dg_pool", "ad_annual", "conf_level"),
-  #   col_time   = c("period_no", "year_start", "year_end", "period_type"),
-  #   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id", "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se", "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c"),
-  #   col_cs     = c("c_no",	"c_id",	"c_period", "lu_id", "lu_name",	"c_pool",	"c_value",	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
-  # )
-  #
-  # app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio", "C_all")
-
   ## + Initiate translation ====================================================
 
   ## !!! In a package the translation folder needs to be directed to the package location
@@ -65,6 +49,27 @@ shiny_run_mocaredd_dev2 <- function(...) {
     style = "display:inline;font-color: black !important"
   )
 
+  app_window_title <- "Mocaredd"
+
+  ## App colors
+  app_primary_color   <- "#4991B0"
+  app_secondary_color <- "#77AB16"
+
+  ## App theme
+  app_theme <- bslib::bs_theme(
+    version = 5,
+    bootswatch = "yeti",
+    base_font = bslib::font_collection(
+      "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue",
+      "Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol","Noto Color Emoji"
+    ),
+    code_font = bslib::font_google("Fira Code"),
+    heading_font = bslib::font_google("Inter"),
+    primary = app_primary_color,
+    secondary = app_secondary_color,
+  )
+
   ## Dropdown list for language selection
   language_selector <- shinyWidgets::pickerInput(
     inputId = "language",
@@ -78,6 +83,15 @@ shiny_run_mocaredd_dev2 <- function(...) {
     option = shinyWidgets::pickerOptions(style = "z-index:10000;")
   )
 
+  ## Footer div
+  app_footer <- div(
+    class = "container footer text-center",
+    tags$small(
+      "(c) 2026 MyApp - Developed by ",
+      tags$strong("Your Name"),
+      " - With the support of XYZ Institute"
+    )
+  )
 
 
   ##
@@ -92,10 +106,6 @@ shiny_run_mocaredd_dev2 <- function(...) {
     shinyjs::useShinyjs(),
     shinyWidgets::useSweetAlert(),
     shiny.i18n::usei18n(i18n),
-    # tags$head(HTML(
-    #   '<!-- 100% privacy-first analytics -->
-    #   <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>'
-    #   )),
     tags$head(tags$script(src = "assets/js_activate_tab.js")),
     tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "assets/style.css")),
     htmltools::htmlDependency(
@@ -104,30 +114,22 @@ shiny_run_mocaredd_dev2 <- function(...) {
       src = c(href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/"),
       stylesheet = "css/flag-icons.min.css"
     ),
-    # leafletjs,
 
     ## + Layout UI elements ====================================================
 
     bslib::page_navbar(
       id = "navbar",
       title = app_title,
-      window_title = "{mocaredd}",
-      theme = bs_theme(
-        version = 5,
-        bootswatch = "yeti",
-        base_font = font_collection(
-          "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue",
-          "Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji",
-          "Segoe UI Symbol","Noto Color Emoji"
-          ),
-        code_font = font_google("Fira Code"),
-        heading_font = font_google("Lato"),
-        primary = "#4991B0",
-        secondary = "#77AB16",
+      window_title = app_window_title,
+      theme = app_theme,
+      navbar_options = navbar_options(
+        bg = "#f8f9fa",
+        position = "fixed-top",
+        class = "navbar-expand-sm"
       ),
-      navbar_options = navbar_options(bg = "#f8f9fa"),
       fillable = FALSE, ## Not needed for now, make a tab fill the whole browser, cool for leaflets
       # inverse = FALSE, ## Not working well with yeti, overridden in assets/styles.css
+      footer = app_footer,
 
       ## + Panels ####
       nav_spacer(), ## align menu to the right
@@ -136,14 +138,14 @@ shiny_run_mocaredd_dev2 <- function(...) {
         title = i18n$t("Home"),
         value = "home",
         #icon = icon("campground"),
-        mod_home_UI("tab_home", i18n = i18n)
+        mod_home_UI2("tab_home", i18n = i18n)
       ),
 
       nav_panel(
         title = i18n$t("Tool"),
         value = "tool",
         #icon = icon("mug-hot"),
-        mod_tool_UI("tab_tool", i18n = i18n)
+        mod_tool_UI2("tab_tool", i18n = i18n)
       ),
 
       # nav_panel(
@@ -184,9 +186,9 @@ shiny_run_mocaredd_dev2 <- function(...) {
     r_lang <- reactive({ input$language })
 
     ## + Module server functions ####
-    mod_home_server("tab_home", rv = rv)
+    mod_home_server2("tab_home", rv = rv)
 
-    mod_tool_server("tab_tool", rv = rv)
+    mod_tool_server2("tab_tool", rv = rv)
 
     mod_about_server("tab_about", rv = rv)
 
@@ -194,10 +196,6 @@ shiny_run_mocaredd_dev2 <- function(...) {
     observeEvent(input$language, {
       shiny.i18n::update_lang(language = input$language)
     })
-
-    # observeEvent(rv$actions$to_home, {
-    #   updateTabsetPanel(session, "navbar", "home")
-    # })
 
     observeEvent(rv$actions$to_tool, {
       nav_select(id = "navbar", selected = "tool")
