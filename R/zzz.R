@@ -1,6 +1,4 @@
-
-
-## Make path to images from inst/assets available for the shiny app
+## Make path to 'assets' from inst/assets available for the shiny app
 .onLoad <- function(libname, pkgname) {
   shiny::addResourcePath(
     prefix = "assets",
