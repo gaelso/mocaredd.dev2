@@ -172,9 +172,8 @@ shiny_run_mocaredd_dev2 <- function(...) {
     ## + Initiate reactive values list to be passed between modules ####
     ## See https://rtask.thinkr.fr/communication-between-modules-and-its-whims/
     rv <- reactiveValues(
-      #checklist = app_checklist,
-      inputs    = reactiveValues(),
       checks    = reactiveValues(),
+      inputs    = reactiveValues(),
       sims      = reactiveValues(),
       res       = reactiveValues(),
       gt        = reactiveValues(),

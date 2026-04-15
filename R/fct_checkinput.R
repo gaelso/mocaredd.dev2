@@ -52,7 +52,8 @@
 #'                    update. Ignored when \code{.pb_session} is \code{NULL}.
 #' @param .pb_max     Value between 0 and 100, default to 100. What should progress bar max be
 #'                    after all checks are passed.
-#' @param .minislow   TRUE or FALSE. If TRUE, add a small 0.1 sec sleep after each check.
+#' @param .minislow   NA or numeric. If numeric, add that value in seconds to system sleep to
+#'                    make checks more visible in the console.
 #'
 #' @return A list with two elements:
 #' \describe{
@@ -79,14 +80,15 @@
 #' cat(log_lines, sep = "\n")
 #'
 #' @export
-fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 100, .minislow = T) {
+fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 100, .minislow = NA) {
 
 
   ## !!! FOR TESTING ONLY
   # .path = system.file("extdata/example1-4pools.xlsx", package = "mocaredd.dev2")
   # .path = system.file("extdata/mocaredd-templatev2-4pools.xlsx", package = "mocaredd.dev2")
   # .path = system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
-  # .pb_id = NULL ; .pb_session = NULL ; .pb_max = 80 ; .minislow = F
+  # .path = system.file("extdata/test-simple-noCF.xlsx", package = "mocaredd.dev2")
+  # .pb_id = NULL ; .pb_session = NULL ; .pb_max = 80 ; .minislow = NA
   ## !!!
 
   ##
@@ -97,15 +99,17 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     tabs   = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stocks"),
     tabsv2 = c("setup", "time", "area", "carbon"),
     cats   = list(
-      c_unit = c("DM", "C"),
+      c_unit = c("DM", "C", "ratio"),
       c_pool = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
       r_acti = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
       p_type = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
       pdf    = c("normal", "beta"),
-      c_var  = c("CF", "RS", "DG_ratio", "C_all")
+      c_var  = c("CF", "RS", "DG_ratio")
     ),
     cols = list(
       setup  = c("n_iter", "c_unit", "dg_ext", "dg_pool", "ad_annual",
+                 "conf_level", "digits", "ran_seed", "trunc_pdf"),
+      setupv2  = c("n_iter", "dg_ext", "dg_pool", "ad_annual",
                  "conf_level", "digits", "ran_seed", "trunc_pdf"),
       time   = c("period_no", "year_start", "year_end", "period_type"),
       area   = c("trans_no", "trans_id", "trans_period", "lu_initial_id", "lu_final_id",
@@ -116,7 +120,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
       areav2 = c("trans_no", "trans_period", "lu_initial", "lu_final",
                  "trans_area", "trans_se", "trans_pdf", "trans_pdf_a",
                  "trans_pdf_b", "trans_pdf_c", "redd_activity"),
-      carbonv2 = c("c_no", "c_period", "c_element", "c_lu", "c_value",
+      carbonv2 = c("c_no", "c_period", "c_element", "c_unit", "c_lu", "c_value",
                    "c_se", "c_pdf", "c_pdf_a", "c_pdf_b", "c_pdf_c")
     )
   )
@@ -136,6 +140,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
         title   = .title,
         status  = "primary"
       )
+    } else {
+      message(paste0(.title, " - progress: ", round(.value), "%."))
     }
   }
 
@@ -183,13 +189,28 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
       stringr::str_remove("forest")
   }
 
+  ## system sleep to make checkks more visible in console
+  minislow <- function(.num) {
+
+    if (is.null(.num) || length(.num) != 1) return(invisible(NULL))
+
+    num <- suppressWarnings(as.numeric(.num))
+
+    if (!is.na(num) && is.finite(num) && num >= 0) {
+      Sys.sleep(num)
+    }
+
+    invisible(NULL)
+
+  }
+
   ##
   ## State #####################################################################
   ##
 
   ## 1 load step + 6 checks — update this if steps are added or removed
   n_steps <- 7L
-  if (!is.null(.pb_session) && !is.null(.pb_id)) pb_factor <- .pb_max / n_steps
+  pb_factor <- .pb_max / n_steps
 
   ## Initiate
   step   <- 0L
@@ -240,7 +261,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     return(out_fail)
   }
 
-  if (.minislow) Sys.sleep(0.1)
+  minislow(.minislow)
+
   step <- step + 1L
 
   ##
@@ -249,17 +271,16 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   show_progress("Checking column names...", step * pb_factor)
 
-  check_cols_setup  <- all(checklist$cols$setup  %in% names(setup))
-  check_cols_time   <- all(checklist$cols$time   %in% names(time))
-  check_cols_area   <- if (check_version == 1) {
-    all(checklist$cols$area %in% names(area))
+   if (check_version == 1) {
+     check_cols_setup  <- all(checklist$cols$setup  %in% names(setup))
+     check_cols_time   <- all(checklist$cols$time   %in% names(time))
+     check_cols_area   <- all(checklist$cols$area   %in% names(area))
+     check_cols_carbon <- all(checklist$cols$carbon %in% names(carbon))
   } else {
-    all(checklist$cols$areav2 %in% names(area))
-    }
-  check_cols_carbon <- if (check_version == 1) {
-    all(checklist$cols$carbon %in% names(carbon))
-  } else {
-    all(checklist$cols$carbonv2 %in% names(carbon))
+    check_cols_setup  <- all(checklist$cols$setupv2  %in% names(setup))
+    check_cols_time   <- all(checklist$cols$time     %in% names(time))
+    check_cols_area   <- all(checklist$cols$areav2   %in% names(area))
+    check_cols_carbon <- all(checklist$cols$carbonv2 %in% names(carbon))
   }
 
   check_cols_all <- all(check_cols_setup, check_cols_time, check_cols_area, check_cols_carbon)
@@ -276,7 +297,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   if (!check_cols_all) return(out_fail)
 
-  if (.minislow) Sys.sleep(0.1)
+  minislow(.minislow)
+
   step <- step + 1L
 
   ##
@@ -286,9 +308,15 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   show_progress("Checking table dimensions...", step * pb_factor)
 
   check_size_setup  <- nrow(setup)  == 1L  # exactly one settings row
-  check_size_time   <- nrow(time)   >= 2L  # at least one REF + one MON period
+  #check_size_time   <- nrow(time)   >= 2L  # at least one REF + one MON period
   check_size_area   <- nrow(area)   >= 2L  # at least two land use transitions
   check_size_carbon <- nrow(carbon) >= 2L  # at least one initial + one final C stock
+
+
+  check_size_time_ref <- any(stringr::str_detect(time$period_type, "REF"))
+  check_size_time_mon <- any(stringr::str_detect(time$period_type, "MON"))
+
+  check_size_time <- all(nrow(time) >= 2L, check_size_time_ref, check_size_time_mon)
 
   check_size_all <- all(check_size_setup, check_size_time, check_size_area, check_size_carbon)
 
@@ -304,7 +332,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   if (!check_size_all) return(out_fail)
 
-  if (.minislow) Sys.sleep(0.1)
+  minislow(.minislow)
+
   step <- step + 1L
 
   ##
@@ -317,7 +346,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     is.logical(setup$trunc_pdf),
     is.numeric(setup$n_iter),
     is.numeric(setup$ran_seed)  | is.logical(setup$ran_seed),
-    is.character(setup$c_unit),
+    if (check_version == 1) is.character(setup$c_unit) else TRUE,
     is.character(setup$dg_pool) | is.logical(setup$dg_pool),
     is.logical(setup$ad_annual),
     is.numeric(setup$conf_level),
@@ -354,6 +383,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     is.character(carbon$c_period),
     is.character(carbon$c_element),
     if (check_version == 1) is.character(carbon$c_lu_id) else is.character(carbon$c_lu),
+    if (check_version == 2) is.character(carbon$c_unit) else TRUE,
     # is.numeric(carbon$c_value)  | is.logical(carbon$c_value),
     # is.numeric(carbon$c_se)     | is.logical(carbon$c_se),
     is.numeric(carbon$c_value),
@@ -378,7 +408,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   if (!check_dt_all) return(out_fail)
 
-  if (.minislow) Sys.sleep(0.1)
+  minislow(.minislow)
+
   step <- step + 1L
 
 
@@ -394,7 +425,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     unlist()
 
   check_cats_setup <- all(
-    setup$c_unit %in% checklist$cats$c_unit,
+    if (check_version == 1) setup$c_unit %in% checklist$cats$c_unit else TRUE,
     dg_pool_vec  %in% checklist$cats$c_pool
   )
 
@@ -407,7 +438,9 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   )
 
   check_cats_carbon <- all(
-    unique(carbon$c_element)                    %in% c(checklist$cats$c_pool, checklist$cats$c_var),
+    unique(carbon$c_element) %in% c(checklist$cats$c_pool, checklist$cats$c_var),
+    if (check_version == 2) unique(carbon$c_unit) %in% checklist$cats$c_unit else TRUE,
+    if (check_version == 2) carbon$c_unit[carbon$c_element %in% checklist$cats$c_pool] %in% c("DM", "C") else TRUE,
     unique(stringr::str_to_lower(carbon$c_pdf)) %in% checklist$cats$pdf
   )
 
@@ -425,7 +458,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   if (!check_cats_all) return(out_fail)
 
-  if (.minislow) Sys.sleep(0.1)
+  minislow(.minislow)
+
   step <- step + 1L
 
 
@@ -449,7 +483,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     carbon <- carbon |>
       dplyr::mutate(
         c_lu_id = label2id(c_lu),
-        c_id = if (unique_c_period) paste(c_element, c_lu_id, sep = "*") else paste(c_period, c_element, c_lu_id, sep = "*")
+        c_plu_id = if (unique_c_period) c_lu_id else paste(c_period, c_lu_id, sep = "*"),
+        c_id = if (unique_c_period) paste(c_lu_id, c_element, sep = "*") else paste(c_period, c_lu_id, c_element, sep = "*")
       )
   }
 
@@ -476,16 +511,18 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   if (!check_ids_all) return(out_fail)
 
-  if (.minislow) Sys.sleep(0.1)
+  minislow(.minislow)
+
   step <- step + 1L
 
 
   ##
-  ## Check 6: Cross-table matching and logical consistency #####################
+  ## Check 6: Cross- and intra-table matching and logical consistency ##########
   ##
 
-  show_progress("Checking cross-table consistency...", step * pb_factor)
+  show_progress("Checking cross-table and intra_table consistency...", step * pb_factor)
 
+  ## + Match periods ------
   ## Periods match between AD and time tables
   check_match_period_area <- all(
     sort(unique(area$trans_period)) == sort(unique(time$period_no))
@@ -499,6 +536,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     TRUE
   }
 
+  ## + Match land uses ------
   ## All land uses in 'area' must be present in 'carbon'
   # lu_in_area <- sort(unique(c(area$lu_initial, area$lu_final)))
   # lu_in_carbon <- sort(unique(carbon$c_lu))
@@ -508,24 +546,53 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   lu_in_carbon <- sort(unique(carbon$c_lu_id))
   check_match_lu_id <- all(lu_in_area %in% lu_in_carbon)
 
-  ## At least one reference and one monitoring period
-  check_match_ref <- any(stringr::str_detect(time$period_type, "REF"))
-  check_match_mon <- any(stringr::str_detect(time$period_type, "MON"))
-
+  ## + Carbon fraction x dry matter ------
   ## Carbon fraction must be provided when unit is dry matter
-  #check_match_dm <- (setup$c_unit == "DM" && is.numeric(setup$c_fraction)) || setup$c_unit == "C"
-  check_match_dm <- if (setup$c_unit == "DM") {
-    if ("CF" %in% unique(carbon$c_element)) {
-      all(carbon$c_value[carbon$c_element == "CF"] > 0, carbon$c_se[carbon$c_element == "CF"] > 0)
+  check_match_dm <- if (check_version == 1) {
+    if (setup$c_unit == "DM") {
+      all(setup$c_fraction > 0, setup$c_fraction_se >= 0)
+    } else if (setup$c_unit == "C") {
+      TRUE
     } else {
       FALSE
     }
-  } else if (setup$c_unit == "C") {
-    TRUE
+  } else if (check_version == 2) {
+    if ("DM" %in% unique(carbon$c_unit)) {
+      all("CF" %in% carbon$c_element, carbon$c_value[carbon$c_element == "CF"] > 0, carbon$c_se[carbon$c_element == "CF"] >= 0)
+    } else if ("C" %in% unique(carbon$c_unit)) {
+      TRUE
+    } else {
+      FALSE
+    }
   } else {
     FALSE
   }
 
+  ## + Match RS with AGB ------
+  ## if RS is use, there should be AGB for the same LU
+  check_match_rsagb1 <- if ("RS" %in% unique(carbon$c_element)) {
+    lu_rs <- carbon |> dplyr::filter(c_element == "RS") |> dplyr::pull(c_plu_id) |> sort()
+    lu_agb <- carbon |> dplyr::filter(c_element == "AGB") |> dplyr::pull(c_plu_id) |> sort()
+    length(setdiff(lu_rs, lu_agb)) == 0
+  } else {
+    TRUE
+  }
+
+  ## C unit for AGB and RS should be same
+  check_match_rsagb2 <- if ("RS" %in% unique(carbon$c_element) & check_match_rsagb1) {
+    lu_rsagb <- carbon |>
+      dplyr::filter(c_element %in% c("AGB", "RS")) |>
+      tidyr::pivot_wider(id_cols = c(c_plu_id), values_from = c_unit, names_from = c_element)
+    all(lu_rsagb$AGB == lu_rsagb$RS)
+  } else if (!check_match_rsagb1) {
+    FALSE
+  } else {
+    TRUE
+  }
+
+  check_match_rsagb <- all(check_match_rsagb1, check_match_rsagb2)
+
+  ## + Match degraded and intact LU ------
   ## If DG_ratio is used, dg_ext must strip degraded LU names back to intact LUs
   if (!is.na(setup$dg_ext) && "DG_ratio" %in% unique(carbon$c_element)) {
     dg_lu_intact <- carbon |>
@@ -541,15 +608,18 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     check_match_dg <- TRUE
   }
 
+
+
+
+  ## + Recap ------
   match_flags  <- c(check_match_period_area, check_match_period_carbon, check_match_lu_id,
-                    check_match_ref, check_match_mon, check_match_dm, check_match_dg)
+                    check_match_dm, check_match_rsagb, check_match_dg)
   match_labels <- c(
     "trans_period does not match period_no",
     "c_period does not match period_no",
     "land use IDs present in AD/area but missing from c_stocks/carbon",
-    "no REF period found in time_periods",
-    "no MON period found in time_periods",
-    "c_unit is 'DM' but CF is missing in c_stocks/carbon",
+    "c_unit is 'DM' but CF is missing in usr(v1)/carbon(v2)",
+    "RS defined for land uses with no AGB values or mismatch C unit",
     "DG_ratio used but dg_ext does not resolve to existing LU IDs"
   )
 
@@ -563,6 +633,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   )
 
   if (!check_match_all) return(out_fail)
+
+  minislow(.minislow)
 
 
   ##

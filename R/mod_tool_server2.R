@@ -22,6 +22,13 @@ mod_tool_server2 <- function(id, rv) {
 
     ns <- session$ns
 
+    ## !!! FOR TESTING ONLY
+    # rv <- list(checks = list(), inputs = list(), sims = list(), res = list())
+    # .path = system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
+    # check_result = fct_checkinput(.path = .path, .minislow = 0.2)
+    # rv$checks$all_ok <- isTRUE(check_result$all_ok)
+    # rv$inputs <- check_result$data
+    ## !!!
 
     ##
     ## 1. SIDEBAR — LOAD & CHECK ###############################################
@@ -113,7 +120,7 @@ mod_tool_server2 <- function(id, rv) {
           .pb_session = session,
           .pb_id      = ns("prog_allchecks"),
           .pb_max     = 80,
-          .minislow   = TRUE
+          .minislow   = 0.2
         ),
         message = function(m) {
           shinyjs::html(
@@ -126,24 +133,23 @@ mod_tool_server2 <- function(id, rv) {
       )
 
       rv$checks$all_ok <- isTRUE(check_result$all_ok)
+      rv$inputs <- check_result$data
 
-      ## 1.3.3 Calc arithmetic mean ------
+      ## 1.3.3 Make calc chain and calc arithmetic mean ------
       if (rv$checks$all_ok) {
 
         ## Enable show check only if all checks passed
         shinyjs::enable("btn_show_checks")
 
-        ## Store tables (same rv$inputs names as v1 for downstream compatibility)
-        rv$inputs$setup  <- check_result$data$setup
-        rv$inputs$time <- check_result$data$time  |>
+        ## Add period length from input time
+        rv$inputs$time <- rv$inputs$time |>
           dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
-        rv$inputs$area   <- check_result$data$area
-        rv$inputs$carbon   <- check_result$data$carbon
 
         ## Derived settings used by MCS functions
         rv$inputs$setup$ci_alpha       <- 1 - rv$inputs$usr$conf_level
         rv$inputs$setup$conf_level_txt <- paste0(rv$inputs$usr$conf_level * 100, "%")
 
+        ## 1.3.3.1 Build calculation chain -----
         ## Compute arithmetic mean emission reductions
         rv$checks$ari_res <- fct_arithmetic_mean(
           .ad   = rv$inputs$ad,
