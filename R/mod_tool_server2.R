@@ -146,15 +146,15 @@ mod_tool_server2 <- function(id, rv) {
           dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
 
         ## Derived settings used by MCS functions
-        rv$inputs$setup$ci_alpha       <- 1 - rv$inputs$usr$conf_level
-        rv$inputs$setup$conf_level_txt <- paste0(rv$inputs$usr$conf_level * 100, "%")
+        rv$inputs$setup$ci_alpha       <- 1 - rv$inputs$setup$conf_level
+        rv$inputs$setup$conf_level_txt <- paste0(rv$inputs$setup$conf_level * 100, "%")
 
         ## 1.3.3.1 Build calculation chain -----
         ## Compute arithmetic mean emission reductions
         rv$checks$ari_res <- fct_arithmetic_mean(
           .ad   = rv$inputs$ad,
           .cs   = rv$inputs$cs,
-          .usr  = rv$inputs$usr,
+          .usr  = rv$inputs$setup,
           .time = rv$inputs$time
         )
 
@@ -255,7 +255,7 @@ mod_tool_server2 <- function(id, rv) {
     output$vb_dg_method <- renderText({
       req(rv$checks$all_ok)
       if ("DG_ratio" %in% unique(rv$inputs$cs$c_element)) {
-        paste0("Degradation ratio applied to ", rv$inputs$usr$dg_pool)
+        paste0("Degradation ratio applied to ", rv$inputs$setup$dg_pool)
       } else {
         "Carbon stock difference"
       }
@@ -344,11 +344,11 @@ mod_tool_server2 <- function(id, rv) {
         title = "Set seed for random simulations...", status = "primary"
       )
 
-      if (!is.na(rv$inputs$usr$ran_seed)) {
-        set.seed(rv$inputs$usr$ran_seed)
+      if (!is.na(rv$inputs$setup$ran_seed)) {
+        set.seed(rv$inputs$setup$ran_seed)
       } else {
-        rv$inputs$usr$app_ran_seed <- sample(1:100, 1)
-        set.seed(rv$inputs$usr$app_ran_seed)
+        rv$inputs$setup$app_ran_seed <- sample(1:100, 1)
+        set.seed(rv$inputs$setup$app_ran_seed)
       }
 
       Sys.sleep(0.1)
@@ -362,7 +362,7 @@ mod_tool_server2 <- function(id, rv) {
       rv$mcs$sim_trans <- fct_combine_mcs_E(
         .ad   = rv$inputs$ad,
         .cs   = rv$inputs$cs,
-        .usr  = rv$inputs$usr,
+        .usr  = rv$inputs$setup,
         .time = rv$inputs$time
       )
 
@@ -383,20 +383,20 @@ mod_tool_server2 <- function(id, rv) {
         fct_combine_mcs_P(
           .time        = rv$inputs$time,
           .period_type = "REF",
-          .ad_annual   = rv$inputs$usr$ad_annual
+          .ad_annual   = rv$inputs$setup$ad_annual
         )
 
       rv$mcs$sim_MON <- rv$mcs$sim_trans |>
         fct_combine_mcs_P(
           .time        = rv$inputs$time,
           .period_type = "MON",
-          .ad_annual   = rv$inputs$usr$ad_annual
+          .ad_annual   = rv$inputs$setup$ad_annual
         )
 
       rv$mcs$sim_ER <- fct_combine_mcs_ER(
         .sim_ref   = rv$mcs$sim_REF,
         .sim_mon   = rv$mcs$sim_MON,
-        .ad_annual = rv$inputs$usr$ad_annual
+        .ad_annual = rv$inputs$setup$ad_annual
       )
 
       Sys.sleep(0.1)
@@ -411,28 +411,28 @@ mod_tool_server2 <- function(id, rv) {
         .data     = rv$mcs$sim_trans,
         .id       = .data$trans_id,
         .sim      = .data$E_year,
-        .ci_alpha = rv$inputs$usr$ci_alpha
+        .ci_alpha = rv$inputs$setup$ci_alpha
       )
 
       rv$mcs$res_redd <- fct_calc_res(
         .data     = rv$mcs$sim_redd,
         .id       = .data$redd_id,
         .sim      = .data$E_year,
-        .ci_alpha = rv$inputs$usr$ci_alpha
+        .ci_alpha = rv$inputs$setup$ci_alpha
       )
 
       rv$mcs$res_REF <- fct_calc_res(
         .data     = rv$mcs$sim_REF,
         .id       = .data$period_type,
         .sim      = .data$E,
-        .ci_alpha = rv$inputs$usr$ci_alpha
+        .ci_alpha = rv$inputs$setup$ci_alpha
       )
 
       rv$mcs$res_MON <- fct_calc_res(
         .data     = rv$mcs$sim_MON,
         .id       = .data$period_type,
         .sim      = .data$E,
-        .ci_alpha = rv$inputs$usr$ci_alpha
+        .ci_alpha = rv$inputs$setup$ci_alpha
       )
 
       rv$mcs$res_MON2 <- rv$mcs$res_MON |>
@@ -442,7 +442,7 @@ mod_tool_server2 <- function(id, rv) {
         .data     = rv$mcs$sim_ER,
         .id       = .data$period_type,
         .sim      = .data$ER_sim,
-        .ci_alpha = rv$inputs$usr$ci_alpha
+        .ci_alpha = rv$inputs$setup$ci_alpha
       )
 
       rv$mcs$res_ER2 <- rv$mcs$res_ER |>
@@ -475,7 +475,7 @@ mod_tool_server2 <- function(id, rv) {
         .cilower   = E_cilower,
         .ciupper   = E_ciupper,
         .id_colname = "Land use transition",
-        .conflevel = rv$inputs$usr$conf_level_txt
+        .conflevel = rv$inputs$setup$conf_level_txt
       )
 
       rv$mcs$fp_redd <- fct_forestplot(
@@ -486,7 +486,7 @@ mod_tool_server2 <- function(id, rv) {
         .cilower   = E_cilower,
         .ciupper   = E_ciupper,
         .id_colname = "REDD+ activities",
-        .conflevel = rv$inputs$usr$conf_level_txt
+        .conflevel = rv$inputs$setup$conf_level_txt
       )
 
       rv$mcs$fp_ER <- fct_forestplot(
@@ -498,7 +498,7 @@ mod_tool_server2 <- function(id, rv) {
         .cilower    = E_cilower,
         .ciupper    = E_ciupper,
         .id_colname = "Time periods",
-        .conflevel  = rv$inputs$usr$conf_level_txt,
+        .conflevel  = rv$inputs$setup$conf_level_txt,
         .filename   = NA
       )
 
