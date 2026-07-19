@@ -4,18 +4,13 @@
 \alias{fct_combine_mcs_E}
 \title{Generate and propagate Monte Carlo Simulations based on a template input file.}
 \usage{
-fct_combine_mcs_E(.ad, .cs, .usr, .time)
+fct_combine_mcs_E(.checked_data)
 }
 \arguments{
-\item{.ad}{Activity Data input table for the shiny app (AD_lu_transitions)}
-
-\item{.cs}{Carbon Stock input table for the shiny app (c_stocks)}
-
-\item{.usr}{User inputs' table for the shiny app (user_inputs). Contains the number
-of iterations of the MCS, carbon fraction if needed and if truncated PDFs
-should be used when necessary.}
-
-\item{.time}{the time period table from the input file (see template)}
+\item{.checked_data}{The list returned by \code{fct_checkinput()}. Its
+\code{template_version} element drives version-specific behaviour and its
+\code{data} element supplies the \code{setup}, \code{time}, \code{area}
+and \code{carbon} tables.}
 }
 \value{
 A data frame with Monte Carlo simulations of CO2 emissions for each land use
@@ -26,23 +21,15 @@ TBD
 }
 \examples{
 library(mocaredd)
-library(readxl)
-library(dplyr)
 
-path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
+path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 
-cs   <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-ad   <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-usr  <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
-time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
+checked <- fct_checkinput(.path = path)
 
-cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
-time_p   <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
-
-res      <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr, .time = time_p)
+res <- fct_combine_mcs_E(.checked_data = checked)
 
 get_trans <- sample(res$trans_id, 1)
-res_sub <- res |> filter(trans_id == get_trans)
+res_sub <- res |> dplyr::filter(trans_id == get_trans)
 
 hist(res_sub$E)
 

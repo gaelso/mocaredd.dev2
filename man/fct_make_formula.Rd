@@ -4,12 +4,18 @@
 \alias{fct_make_formula}
 \title{Check that the app's the input data has matching land uses and correct carbon pools and associated factors.}
 \usage{
-fct_make_formula(.c_el, .c_unit)
+fct_make_formula(.c_el, .c_unit, .version = 1)
 }
 \arguments{
-\item{.c_el}{Vector of carbon elements, inc. "A::}
+\item{.c_el}{Vector of carbon elements, inc. "AGB", "BGB", "RS", "DW", "LI", "SOC", "ALL".}
 
-\item{.c_unit}{"DM" or "C",}
+\item{.c_unit}{Carbon unit. For \code{.version = 1} a single value ("DM" or "C") that
+applies to the whole land use. For \code{.version = 2} a vector aligned
+with \code{.c_el} giving the unit of each carbon element.}
+
+\item{.version}{Template version, 1 (default) or 2. In v1 a single carbon fraction (CF)
+wraps the biomass pools when the land use is expressed as dry matter (DM).
+In v2 CF is applied per carbon element, only to those expressed as DM.}
 }
 \value{
 A character value with the formula for calculating total carbon stock.
@@ -32,5 +38,8 @@ library(mocaredd)
 c_el <- c("AGB", "RS", "DW")
 
 fct_make_formula(.c_el = c_el, .c_unit = "DM")
+
+## Template v2, one unit per element
+fct_make_formula(.c_el = c_el, .c_unit = c("DM", NA, "C"), .version = 2)
 
 }

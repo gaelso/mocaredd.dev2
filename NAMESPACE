@@ -3,6 +3,7 @@
 export(fct_arithmetic_mean)
 export(fct_calc_res)
 export(fct_check_data2)
+export(fct_checkinput)
 export(fct_combine_mcs_E)
 export(fct_combine_mcs_ER)
 export(fct_combine_mcs_P)

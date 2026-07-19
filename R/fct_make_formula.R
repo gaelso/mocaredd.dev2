@@ -12,8 +12,13 @@
 #'              'CF' is provided.
 #'
 #'
-#' @param .c_el Vector of carbon elements, inc. "A::
-#' @param .c_unit "DM" or "C",
+#' @param .c_el Vector of carbon elements, inc. "AGB", "BGB", "RS", "DW", "LI", "SOC", "ALL".
+#' @param .c_unit Carbon unit. For \code{.version = 1} a single value ("DM" or "C") that
+#'               applies to the whole land use. For \code{.version = 2} a vector aligned
+#'               with \code{.c_el} giving the unit of each carbon element.
+#' @param .version Template version, 1 (default) or 2. In v1 a single carbon fraction (CF)
+#'               wraps the biomass pools when the land use is expressed as dry matter (DM).
+#'               In v2 CF is applied per carbon element, only to those expressed as DM.
 #'
 #' @return A character value with the formula for calculating total carbon stock.
 #'
@@ -24,8 +29,47 @@
 #'
 #' fct_make_formula(.c_el = c_el, .c_unit = "DM")
 #'
+#' ## Template v2, one unit per element
+#' fct_make_formula(.c_el = c_el, .c_unit = c("DM", NA, "C"), .version = 2)
+#'
 #' @export
-fct_make_formula <- function(.c_el, .c_unit){
+fct_make_formula <- function(.c_el, .c_unit, .version = 1){
+
+  ## == Template v2: one carbon unit per carbon element ========================
+  if (.version == 2) {
+
+    ## Unit lookup by element; multiply an element by CF only when it is dry matter
+    unit <- .c_unit
+    names(unit) <- .c_el
+    with_cf <- function(term, ref = term) {
+      if (!is.na(unit[[ref]]) && unit[[ref]] == "DM") paste0(term, " * CF") else term
+    }
+
+    ## ALL pools combined (usually non-forest, reported as ton C)
+    if ("ALL" %in% .c_el) return(with_cf("ALL"))
+
+    terms <- character(0)
+
+    if ("AGB" %in% .c_el) terms <- c(terms, with_cf("AGB"))
+
+    if ("BGB" %in% .c_el) {
+      terms <- c(terms, with_cf("BGB"))
+    } else if ("RS" %in% .c_el) {
+      ## Belowground biomass from Root-to-Shoot ratio, same unit as AGB
+      terms <- c(terms, with_cf("AGB * RS", ref = "AGB"))
+    }
+
+    for (pool in c("DW", "LI", "SOC")) {
+      if (pool %in% .c_el) terms <- c(terms, with_cf(pool))
+    }
+
+    ## Empty only for element-less land uses (e.g. DG_ratio only), overwritten later
+    if (length(terms) == 0) return("0")
+
+    return(paste(terms, collapse = " + "))
+  }
+
+  ## == Template v1: single carbon unit for the whole land use =================
 
   ## + Initiate formula
   c_eq <- c("(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC")

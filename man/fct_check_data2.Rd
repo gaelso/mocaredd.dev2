@@ -25,15 +25,15 @@ analysis: (1) column names, (2) tables' size, (3) data types,
 (4) categories names, (5) unique IDs and (6) matching key variables between tables.
 }
 \examples{
-library(mocaredd)
-library(readxl)
 
-path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd.dev2")
+path <- system.file("extdata/mocaredd-template-v2-4pools.xlsx", package = "mocaredd.dev2")
 
-cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
-time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
+tabs <- c("user", "time", "area", "carbon")
+dat <- purrr::map(tabs , function(x){
+  readxl::read_xlsx(path = path, sheet = x, na = "NA")
+})
+names(dat) <- tabs
 
 fct_check_data2(.ad = ad, .cs = cs, .usr = usr, .time = time)
 

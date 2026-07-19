@@ -93,8 +93,7 @@ mod_tool_server2 <- function(id, rv) {
       ## Reset UI: show progress div, hide everything else in check panel
       shinyjs::hide("check_init_msg")
       shinyjs::show("check_progress")
-      shinyjs::hide("check_vbs")
-      shinyjs::hide("check_cards")
+      shinyjs::hide("check_panel")
 
       ## Clear the console and reset the progress bar
       shinyjs::html("check_console", "")
@@ -133,7 +132,8 @@ mod_tool_server2 <- function(id, rv) {
       )
 
       rv$checks$all_ok <- isTRUE(check_result$all_ok)
-      rv$inputs <- check_result$data
+      rv$checked <- check_result       # full fct_checkinput() output (incl. template_version)
+      rv$inputs  <- check_result$data  # tables, for value boxes and period/ER aggregation
 
       ## 1.3.3 Make calc chain and calc arithmetic mean ------
       if (rv$checks$all_ok) {
@@ -151,12 +151,7 @@ mod_tool_server2 <- function(id, rv) {
 
         ## 1.3.3.1 Build calculation chain -----
         ## Compute arithmetic mean emission reductions
-        rv$checks$ari_res <- fct_arithmetic_mean(
-          .ad   = rv$inputs$ad,
-          .cs   = rv$inputs$cs,
-          .usr  = rv$inputs$setup,
-          .time = rv$inputs$time
-        )
+        rv$checks$ari_res <- fct_arithmetic_mean(.checked_data = rv$checked)
 
         ## Update sidebar MCS accordion
         shinyjs::hide("msg_no_check")
@@ -182,8 +177,7 @@ mod_tool_server2 <- function(id, rv) {
       shinyjs::hide("check_progress")
 
       if (isTRUE(rv$checks$all_ok)) {
-        shinyjs::show("check_vbs")
-        shinyjs::show("check_cards")
+        shinyjs::show("check_panel")
       }
     })
 
@@ -217,25 +211,25 @@ mod_tool_server2 <- function(id, rv) {
     ## + Activity data ---------------------------------------------------------
     output$vb_nb_trans <- renderUI({
       req(rv$checks$all_ok)
-      HTML(paste0(nrow(rv$inputs$ad), "&nbsp;land use transitions"))
+      HTML(paste0(nrow(rv$inputs$area), "&nbsp;land use transitions"))
     })
 
     output$vb_nb_lu <- renderText({
       req(rv$checks$all_ok)
-      nb_lu <- length(unique(c(rv$inputs$ad$lu_initial_id, rv$inputs$ad$lu_final_id)))
+      nb_lu <- length(unique(c(rv$inputs$area$lu_initial_id, rv$inputs$area$lu_final_id)))
       paste0(nb_lu, " land use categories")
     })
 
     output$vb_nb_redd <- renderText({
       req(rv$checks$all_ok)
-      nb_redd <- unique(rv$inputs$ad$redd_activity)
+      nb_redd <- unique(rv$inputs$area$redd_activity)
       paste0(length(nb_redd), " REDD+ activities: ", paste(nb_redd, collapse = ", "))
     })
 
     ## + Carbon stock ----------------------------------------------------------
     output$vb_nb_pools <- renderUI({
       req(rv$checks$all_ok)
-      pools      <- unique(rv$inputs$cs$c_element)
+      pools      <- unique(rv$inputs$carbon$c_element)
       real_pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
       n_pools    <- length(real_pools)
       if ("RS"  %in% pools) n_pools <- n_pools + 1
@@ -245,7 +239,7 @@ mod_tool_server2 <- function(id, rv) {
 
     output$vb_c_pools <- renderText({
       req(rv$checks$all_ok)
-      pools      <- unique(rv$inputs$cs$c_element)
+      pools      <- unique(rv$inputs$carbon$c_element)
       real_pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
       if ("RS" %in% pools) real_pools <- c(real_pools, "BGB via R:S")
       if (length(pools) == 1 && pools == "ALL") real_pools <- "Ctotal"
@@ -254,13 +248,19 @@ mod_tool_server2 <- function(id, rv) {
 
     output$vb_dg_method <- renderText({
       req(rv$checks$all_ok)
-      if ("DG_ratio" %in% unique(rv$inputs$cs$c_element)) {
+      if ("DG_ratio" %in% unique(rv$inputs$carbon$c_element)) {
         paste0("Degradation ratio applied to ", rv$inputs$setup$dg_pool)
       } else {
         "Carbon stock difference"
       }
     })
 
+
+    ## 2.2 Arithmetic mean result table ========================================
+    output$check_result_table <- gt::render_gt({
+      req(rv$checks$all_ok, rv$checks$ari_res)
+      rv$checks$ari_res$gt_emissions
+    })
 
     ## 2.2 Arithmetic mean plot ================================================
     output$check_arithmetic_gg <- renderPlot({
@@ -287,7 +287,7 @@ mod_tool_server2 <- function(id, rv) {
     })
 
     output$check_lumatrix <- gt::render_gt({
-      req(rv$checks$all_ok, rv$inputs$ad, input$check_select_period)
+      req(rv$checks$all_ok, rv$inputs$area, input$check_select_period)
 
       year_start <- rv$inputs$time |>
         dplyr::filter(.data$period_no == input$check_select_period) |>
@@ -297,7 +297,7 @@ mod_tool_server2 <- function(id, rv) {
         dplyr::filter(.data$period_no == input$check_select_period) |>
         dplyr::pull(.data$year_end)
 
-      rv$inputs$ad |>
+      rv$inputs$area |>
         dplyr::filter(.data$trans_period == input$check_select_period) |>
         dplyr::mutate(trans_area = round(.data$trans_area, 0)) |>
         dplyr::arrange(.data$lu_final) |>
@@ -359,12 +359,7 @@ mod_tool_server2 <- function(id, rv) {
         title = "Simulate emissions for each land use transition...", status = "primary"
       )
 
-      rv$mcs$sim_trans <- fct_combine_mcs_E(
-        .ad   = rv$inputs$ad,
-        .cs   = rv$inputs$cs,
-        .usr  = rv$inputs$setup,
-        .time = rv$inputs$time
-      )
+      rv$mcs$sim_trans <- fct_combine_mcs_E(.checked_data = rv$checked)
 
       Sys.sleep(0.1)
 

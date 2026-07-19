@@ -214,6 +214,11 @@ mod_tool_UI2 <- function(id, i18n){
   )
 
   ## Check cards
+  card_result_table <- card(
+    h5(i18n$t("Arithmetic mean emissions and reductions (tCO2e/yr)")),
+    gt::gt_output(ns("check_result_table"))
+  )
+
   card_arithmetic_gg <- card(
     h5(i18n$t("Arithmetic mean emission reductions per period (tCO2e/y)")),
     plotOutput(ns("check_arithmetic_gg"))
@@ -232,7 +237,10 @@ mod_tool_UI2 <- function(id, i18n){
     gt::gt_output(ns("check_lumatrix"))
   )
 
-  ## Check panel layout
+  ## Check panel layout: 3 rows
+  ##  1. value boxes
+  ##  2. result table and arithmetic figure (50% width each)
+  ##  3. land use change matrix
   div_check_panel <- shinyjs::hidden(div(
     id = ns("check_panel"),
     layout_column_wrap(
@@ -241,10 +249,12 @@ mod_tool_UI2 <- function(id, i18n){
     ),
     br(),
     layout_column_wrap(
-      fill = FALSE,
-      card_arithmetic_gg,
-      card_lumatrix
-    )
+      width = 1/2, fill = FALSE,
+      card_result_table,
+      card_arithmetic_gg
+    ),
+    br(),
+    card_lumatrix
   ))
 
 

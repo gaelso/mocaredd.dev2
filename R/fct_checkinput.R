@@ -37,10 +37,10 @@
 #' )
 #' rv$check_log <- log_lines
 #' if (!is.null(result)) {
-#'   rv$inputs$usr    <- result$data$usr
+#'   rv$inputs$setup  <- result$data$setup
 #'   rv$inputs$time   <- result$data$time
-#'   rv$inputs$ad     <- result$data$ad
-#'   rv$inputs$cs     <- result$data$cs
+#'   rv$inputs$area   <- result$data$area
+#'   rv$inputs$carbon <- result$data$carbon
 #'   rv$checks$all_ok <- result$all_ok
 #' }
 #' }
@@ -55,11 +55,15 @@
 #' @param .minislow   NA or numeric. If numeric, add that value in seconds to system sleep to
 #'                    make checks more visible in the console.
 #'
-#' @return A list with two elements:
+#' @return A list with three elements:
 #' \describe{
 #'   \item{\code{all_ok}}{Logical. \code{TRUE} only if every check passed.}
-#'   \item{\code{data}}{Named list with elements \code{usr}, \code{time}, \code{ad}, \code{cs}
-#'         (the four loaded tables as tibbles).}
+#'   \item{\code{template_version}}{Integer, 1 or 2, the detected template version.
+#'         Downstream calculation functions take this whole list as \code{.checked_data}
+#'         and read \code{.checked_data$template_version} to know where to find the carbon
+#'         unit and carbon fraction.}
+#'   \item{\code{data}}{Named list with elements \code{setup}, \code{time}, \code{area},
+#'         \code{carbon} (the four loaded tables as tibbles).}
 #' }
 #' The function throws an error (via \code{stop()}) only for unrecoverable failures
 #' (unreadable file, missing sheets). All check outcomes are reported via \code{message()}.
@@ -266,7 +270,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   step <- step + 1L
 
   ##
-  ## Check 1: Column names #####################################################
+  ## Step 2: Column names #####################################################
   ##
 
   show_progress("Checking column names...", step * pb_factor)
@@ -302,7 +306,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   step <- step + 1L
 
   ##
-  ## Check 2: Table sizes ######################################################
+  ## Step 3: Table sizes ######################################################
   ##
 
   show_progress("Checking table dimensions...", step * pb_factor)
@@ -337,7 +341,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   step <- step + 1L
 
   ##
-  ## Check 3: Data types #######################################################
+  ## Step 4: Data types #######################################################
   ##
 
   show_progress("Checking column data types...", step * pb_factor)
@@ -414,7 +418,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
 
   ##
-  ## Check 4: Category variables ###############################################
+  ## Step 5: Category variables ###############################################
   ##
 
   show_progress("Checking category values...", step * pb_factor)
@@ -430,7 +434,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   )
 
   ptype_pattern  <- paste0(checklist$cats$p_type, collapse = "|")
-  check_cats_time <- all(stringr::str_detect(unique(time$period_type), pattern = ptype_pattern))
+  check_cats_time <- all(stringr::str_detect(unique(time$period_type[!is.na(time$period_type)]), pattern = ptype_pattern))
 
   check_cats_area <- all(
     unique(area$redd_activity)                    %in% checklist$cats$r_acti,
@@ -439,8 +443,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   check_cats_carbon <- all(
     unique(carbon$c_element) %in% c(checklist$cats$c_pool, checklist$cats$c_var),
-    if (check_version == 2) unique(carbon$c_unit) %in% checklist$cats$c_unit else TRUE,
-    if (check_version == 2) carbon$c_unit[carbon$c_element %in% checklist$cats$c_pool] %in% c("DM", "C") else TRUE,
+    if (check_version == 2) all(unique(carbon$c_unit[!is.na(carbon$c_unit)]) %in% checklist$cats$c_unit) else TRUE,
+    if (check_version == 2) all(carbon$c_unit[carbon$c_element %in% checklist$cats$c_pool] %in% c("DM", "C")) else TRUE,
     unique(stringr::str_to_lower(carbon$c_pdf)) %in% checklist$cats$pdf
   )
 
@@ -451,7 +455,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     pass_label = "Category values: all categories are valid",
     fail_label = "Category values: invalid categories in",
     problems   = failed_tables(
-      c(check_cat_setup, check_cat_time, check_cat_area, check_cat_carbon),
+      c(check_cats_setup, check_cats_time, check_cats_area, check_cats_carbon),
       c("setup/user_inputs", "time/time_periods", "area/AD_lu_transitions", "carbon/c_stocks")
     )
   )
@@ -464,7 +468,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
 
   ##
-  ## Check 5: Unique IDs #######################################################
+  ## Step 6: Unique IDs #######################################################
   ##
 
   show_progress("Checking unique IDs...", step * pb_factor)
@@ -517,7 +521,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
 
   ##
-  ## Check 6: Cross- and intra-table matching and logical consistency ##########
+  ## Step 7: Cross- and intra-table matching and logical consistency ##########
   ##
 
   show_progress("Checking cross-table and intra_table consistency...", step * pb_factor)
@@ -578,19 +582,20 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     TRUE
   }
 
-  ## C unit for AGB and RS should be same
-  check_match_rsagb2 <- if ("RS" %in% unique(carbon$c_element) & check_match_rsagb1) {
-    lu_rsagb <- carbon |>
-      dplyr::filter(c_element %in% c("AGB", "RS")) |>
-      tidyr::pivot_wider(id_cols = c(c_plu_id), values_from = c_unit, names_from = c_element)
-    all(lu_rsagb$AGB == lu_rsagb$RS)
-  } else if (!check_match_rsagb1) {
-    FALSE
-  } else {
-    TRUE
-  }
+  # ## C unit for AGB and RS should be same -- NOT USED now RS dimensionless ratio
+  # check_match_rsagb2 <- if ("RS" %in% unique(carbon$c_element) & check_match_rsagb1) {
+  #   lu_rsagb <- carbon |>
+  #     dplyr::filter(c_element %in% c("AGB", "RS")) |>
+  #     tidyr::pivot_wider(id_cols = c(c_plu_id), values_from = c_unit, names_from = c_element)
+  #   all(lu_rsagb$AGB == lu_rsagb$RS)
+  # } else if (!check_match_rsagb1) {
+  #   FALSE
+  # } else {
+  #   TRUE
+  # }
 
-  check_match_rsagb <- all(check_match_rsagb1, check_match_rsagb2)
+  # check_match_rsagb <- all(check_match_rsagb1, check_match_rsagb2)
+  check_match_rsagb <- all(check_match_rsagb1)
 
   ## + Match degraded and intact LU ------
   ## If DG_ratio is used, dg_ext must strip degraded LU names back to intact LUs
@@ -668,8 +673,9 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   ##
 
   list(
-    all_ok = all_ok,
-    data   = list(setup = setup, time = time, area = area, carbon = carbon)
+    all_ok           = all_ok,
+    template_version = check_version,
+    data             = list(setup = setup, time = time, area = area, carbon = carbon)
   )
 
 }

@@ -14,32 +14,25 @@
 #'
 #' @examples
 #' library(mocaredd)
-#' library(readxl)
-#' library(dplyr)
 #'
-#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#' path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 #'
-#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
-#' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
+#' checked <- fct_checkinput(.path = path)
 #'
-#' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
-#'
-#' sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
+#' sim_trans <- fct_combine_mcs_E(.checked_data = checked)
 #'
 #' sim_REF <- fct_combine_mcs_P(
 #'   .data = sim_trans,
-#'   .time = time_clean,
+#'   .time = checked$data$time,
 #'   .period_type = "REF",
-#'   .ad_annual = usr$ad_annual
+#'   .ad_annual = checked$data$setup$ad_annual
 #' )
 #'
 #' sim_MON <- fct_combine_mcs_P(
 #'   .data = sim_trans,
-#'   .time = time_clean,
+#'   .time = checked$data$time,
 #'   .period_type = "MON",
-#'   .ad_annual = usr$ad_annual
+#'   .ad_annual = checked$data$setup$ad_annual
 #' )
 #'
 #' ## !!! SIM MON and ER to be done

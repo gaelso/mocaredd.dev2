@@ -14,28 +14,19 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-#' library(readxl)
-#' library(dplyr)
 #' library(mocaredd)
 #'
-#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#' path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 #'
-#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
-#' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
+#' checked <- fct_checkinput(.path = path)
 #'
-#' ad_clean <- ad |> dplyr::filter(!is.na(trans_area) | !is.na(trans_pdf_a))
-#' cs_clean <- cs |> dplyr::filter(!is.na(c_value) | !is.na(c_pdf_a))
-#' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
-#'
-#' sim_trans <- fct_combine_mcs_E(.ad = ad_clean, .cs = cs_clean, .usr = usr)
+#' sim_trans <- fct_combine_mcs_E(.checked_data = checked)
 #'
 #' sim_FREL <- fct_combine_mcs_P(
 #'   .data = sim_trans,
-#'   .time = time_clean,
+#'   .time = checked$data$time,
 #'   .period_type = "REF",
-#'   .ad_annual = usr$ad_annual
+#'   .ad_annual = checked$data$setup$ad_annual
 #' )
 #'
 #' hist(sim_FREL$E)
@@ -57,9 +48,11 @@ fct_combine_mcs_P <- function(
   # # !!!
 
 
-  ## aggregate redd+ periods for REF or MON
+  ## aggregate redd+ periods for REF or MON. Periods with no type (NA period_type,
+  ## e.g. gap years) are computed at transition level but never aggregated here.
   time_sub <- .time |>
-    dplyr::filter(stringr::str_detect(.data$period_type, pattern = .period_type)) |>
+    dplyr::filter(!is.na(.data$period_type),
+                  stringr::str_detect(.data$period_type, pattern = .period_type)) |>
     dplyr::select("period_no", "period_type", "nb_years")
 
   if (.ad_annual) {

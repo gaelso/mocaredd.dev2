@@ -1,11 +1,11 @@
 #
 #
 #
-# fct_sensitivity <- function(.sim_trans, .usr, .time){
+# fct_sensitivity <- function(.sim_trans, .setup, .time){
 #
 #   ## FOR TESTING ONLY
 #   # .sim_trans <- sim_trans
-#   # .usr  <- usr
+#   # .setup  <- usr
 #   # .time <- time_clean
 #   ##
 #
@@ -39,35 +39,35 @@
 #       bind_rows(sim_trans_noDF)
 #
 #     sim_REF <- sim_trans_noDF |>
-#       fct_combine_mcs_P(.time = .time, .period_type = "REF", .ad_annual = .usr$ad_annual)
+#       fct_combine_mcs_P(.time = .time, .period_type = "REF", .ad_annual = .setup$ad_annual)
 #
 #     sim_MON <- sim_trans_noDF |>
-#       fct_combine_mcs_P(.time = .time, .period_type = "MON", .ad_annual = .usr$ad_annual)
+#       fct_combine_mcs_P(.time = .time, .period_type = "MON", .ad_annual = .setup$ad_annual)
 #
-#     sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = .usr$ad_annual)
+#     sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = .setup$ad_annual)
 #
 #     res_ER <- fct_calc_res(
 #       .data = sim_ER,
 #       .id = .data$period_type,
 #       .sim = .data$ER_sim,
-#       .ci_alpha = 1 - .usr$conf_level
+#       .ci_alpha = 1 - .setup$conf_level
 #     )
 #     res_ER
 #
 #
 #     sim_REF <- .sim_trans |>
-#       fct_combine_mcs_P(.time = .time, .period_type = "REF", .ad_annual = .usr$ad_annual)
+#       fct_combine_mcs_P(.time = .time, .period_type = "REF", .ad_annual = .setup$ad_annual)
 #
 #     sim_MON <- .sim_trans |>
-#       fct_combine_mcs_P(.time = .time, .period_type = "MON", .ad_annual = .usr$ad_annual)
+#       fct_combine_mcs_P(.time = .time, .period_type = "MON", .ad_annual = .setup$ad_annual)
 #
-#     sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = .usr$ad_annual)
+#     sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = .setup$ad_annual)
 #
 #     res_ER <- fct_calc_res(
 #       .data = sim_ER,
 #       .id = .data$period_type,
 #       .sim = .data$ER_sim,
-#       .ci_alpha = 1 - .usr$conf_level
+#       .ci_alpha = 1 - .setup$conf_level
 #     )
 #     res_ER
 #

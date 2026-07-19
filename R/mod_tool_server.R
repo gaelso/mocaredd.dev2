@@ -119,7 +119,7 @@ mod_tool_server <- function(id, rv) {
       rv$inputs$usr$conf_level_txt <- paste0(rv$inputs$usr$conf_level * 100, "%")
 
       ## Calc arithmetic mean
-      rv$checks$ari_res <- fct_arithmetic_mean(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr, .time = rv$inputs$time)
+      rv$checks$ari_res <- fct_arithmetic_mean(.area = rv$inputs$ad, .carbon = rv$inputs$cs, .setup = rv$inputs$usr, .time = rv$inputs$time)
 
       Sys.sleep(0.1)
 
@@ -424,9 +424,9 @@ mod_tool_server <- function(id, rv) {
       )
 
       rv$mcs$sim_trans <- fct_combine_mcs_E(
-        .ad = rv$inputs$ad,
-        .cs = rv$inputs$cs,
-        .usr = rv$inputs$usr,
+        .area = rv$inputs$ad,
+        .carbon = rv$inputs$cs,
+        .setup = rv$inputs$usr,
         .time = rv$inputs$time
       )
 
