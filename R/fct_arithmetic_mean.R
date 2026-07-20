@@ -225,19 +225,14 @@ fct_arithmetic_mean <- function(.checked_data){
       total = .data$E
     )
 
-  out_gt <- dplyr::bind_rows(tbl_period, tbl_summary) |>
-    gt::gt(rowname_col = "item", groupname_col = "grp") |>
-    gt::tab_spanner(label = "Emissions (tCO2e/yr)", columns = c("DF", "DG", "total")) |>
-    gt::cols_label(years = "Years", DF = "Deforestation", DG = "Degradation", total = "Total") |>
-    gt::fmt_number(columns = c("DF", "DG", "total"), decimals = 0, use_seps = TRUE) |>
-    gt::sub_missing(columns = gt::everything(), missing_text = "") |>
-    gt::cols_align(align = "right", columns = c("DF", "DG", "total"))
+  ## Tidy table returned as data; the gt object is built in the Shiny server.
+  emissions_table <- dplyr::bind_rows(tbl_period, tbl_summary)
 
   list(
     ER = ari_combi,
     emissions = out_combi,
     gg_emissions = out_gg,
-    gt_emissions = out_gt
+    emissions_table = emissions_table
   )
 
 }

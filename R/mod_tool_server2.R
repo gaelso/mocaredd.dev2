@@ -259,7 +259,14 @@ mod_tool_server2 <- function(id, rv) {
     ## 2.2 Arithmetic mean result table ========================================
     output$check_result_table <- gt::render_gt({
       req(rv$checks$all_ok, rv$checks$ari_res)
-      rv$checks$ari_res$gt_emissions
+
+      rv$checks$ari_res$emissions_table |>
+        gt::gt(rowname_col = "item", groupname_col = "grp") |>
+        gt::tab_spanner(label = "Emissions (tCO2e/yr)", columns = c("DF", "DG", "total")) |>
+        gt::cols_label(years = "Years", DF = "Deforestation", DG = "Degradation", total = "Total") |>
+        gt::fmt_number(columns = c("DF", "DG", "total"), decimals = 0, use_seps = TRUE) |>
+        gt::sub_missing(columns = gt::everything(), missing_text = "") |>
+        gt::cols_align(align = "right", columns = c("DF", "DG", "total"))
     })
 
     ## 2.2 Arithmetic mean plot ================================================
