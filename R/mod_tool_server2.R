@@ -151,7 +151,7 @@ mod_tool_server2 <- function(id, rv) {
 
         ## 1.3.3.1 Build calculation chain -----
         ## Compute arithmetic mean emission reductions
-        rv$checks$ari_res <- fct_arithmetic_mean(.checked_data = rv$checked)
+        rv$checks$ari_res <- fct_arithmetic_mean2(.checked_data = rv$checked)
 
         ## Update sidebar MCS accordion
         shinyjs::hide("msg_no_check")

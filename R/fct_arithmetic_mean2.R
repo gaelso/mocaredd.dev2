@@ -265,16 +265,16 @@ fct_arithmetic_mean2 <- function(.checked_data){
   out_gg <- out_yearly |>
     ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
     ggplot2::geom_line(ggplot2::aes(y = .data$FREL), col = "pink", linewidth = 1) +
-    ggplot2::geom_errorbar(
-      ggplot2::aes(ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
-      width = 0.2, linewidth = 0.8
-    ) +
-    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 4) +
     ggplot2::geom_segment(
       data = out_yearly_mon,
       ggplot2::aes(xend = .data$year, y = .data$FREL, yend = .data$E),
-      col = "limegreen", linewidth = 1,
+      col = "limegreen", linewidth = 2,
       arrow = grid::arrow(length = grid::unit(0.2, "cm"), ends = "both")
+    ) +
+    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 4) +
+    ggplot2::geom_errorbar(
+      ggplot2::aes(ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
+      width = 0.2, linewidth = 0.8
     ) +
     ggplot2::scale_colour_discrete(na.value = "gray50") +
     ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
@@ -283,7 +283,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
                    legend.position = "bottom") +
     ggplot2::labs(x = "Years", y = "Emissions (MtCO2e/y)", color = "")
-
+7
   ##
   ## 8. Result table (tidy data; gt is built in the server) ####################
   ##
