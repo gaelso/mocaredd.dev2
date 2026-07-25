@@ -160,9 +160,9 @@ fct_arithmetic_mean2 <- function(.checked_data){
   ## PT.<ptype>         annual emissions of a reference / monitoring period type
   ## ER.<montype>       emission reductions = REF - MON
   metrics <- function(pm) {
-    Et <- vapply(seq_along(a_id), function(i) {
+    Et <- purrr::map_dbl(seq_along(a_id), function(i) {
       pm[[paste0("AD..", a_id[i])]] * (C_of(a_li[i], pm) - C_of(a_lf[i], pm)) * 44 / 12
-    }, numeric(1))
+    })
     Ey <- if (ad_annual) Et else Et / nb_years[a_period]
 
     out <- c()
@@ -283,7 +283,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
                    legend.position = "bottom") +
     ggplot2::labs(x = "Years", y = "Emissions (MtCO2e/y)", color = "")
-7
+
   ##
   ## 8. Result table (tidy data; gt is built in the server) ####################
   ##
