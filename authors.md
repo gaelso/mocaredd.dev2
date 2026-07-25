@@ -1,0 +1,28 @@
+# Authors and Citation
+
+## Authors
+
+- **Gael Sola**. Author, maintainer.
+
+- **Javier Garcia Perez**. Author.
+
+- **Jimena Saucedo Miranda**. Contributor.
+
+- **Lauri Vesa**. Contributor.
+
+## Citation
+
+Source:
+[`DESCRIPTION`](https://github.com/openforis/mocaredd/blob/main/DESCRIPTION)
+
+Sola G, Garcia Perez J (2026). *mocaredd.dev2: Development version of
+mocaredd: Monte Carlo Simulation for REDD+ uncertainty analysis*. R
+package version 1.0, <https://github.com/openforis/mocaredd>.
+
+    @Manual{,
+      title = {mocaredd.dev2: Development version of mocaredd: Monte Carlo Simulation for REDD+ uncertainty analysis},
+      author = {Gael Sola and Javier {Garcia Perez}},
+      year = {2026},
+      note = {R package version 1.0},
+      url = {https://github.com/openforis/mocaredd},
+    }
