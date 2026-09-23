@@ -479,7 +479,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
       dplyr::mutate(
         lu_initial_id = label2id(lu_initial),
         lu_final_id = label2id(lu_final),
-        trans_id = paste(trans_period, lu_initial_id, "2", lu_final_id, sep = "*")
+        #trans_id = paste(trans_period, lu_initial_id, "2", lu_final_id, sep = "*")
+        trans_id = paste(trans_period, lu_initial_id, lu_final_id, sep = "*")
       )
 
     unique_c_period <- length(unique(carbon$c_period)) == 1 & unique(carbon$c_period) == "ALL"
