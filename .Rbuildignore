@@ -1,4 +1,4 @@
-^mocaredd\.dev\.Rproj$
+^mocaredd\.dev2\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
 ^\.positai$
@@ -7,3 +7,4 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^CLAUDE\.md$
