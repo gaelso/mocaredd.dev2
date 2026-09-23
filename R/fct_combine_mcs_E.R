@@ -357,45 +357,42 @@ fct_combine_mcs_E <- function(.checked_data){
   ##
   ## 5. prepare annualized emissions E_year ####
   ##
-  if (.setup$ad_annual) {
-    sims_Eannual <- sims_E |>
-      dplyr::mutate(time_period_length = 1, E_year = .data$E) |>
-      dplyr::select(
-        "time_period", "time_period_length", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
-        "sim_no", "E_year", "E", dplyr::everything()
-      )
-    } else {
-      sims_Eannual <- sims_E |>
-        dplyr::left_join(
-          dplyr::select(.time, "period_no", time_period_length = "nb_years"),
-          by = dplyr::join_by("time_period" == "period_no")
-          ) |>
-        dplyr::mutate(
-          E_year = round(.data$E / .data$time_period_length, .setup$digits)
-        ) |>
-        dplyr::select(
-          "time_period", "time_period_length", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
-          "sim_no", "E_year", "E", dplyr::everything()
-        )
 
-    }
-    #   time_periods <- unique(rv$inputs$time$period_type)
-    #   rv$mcs$sim_trans2 <- purrr::map(time_periods, function(x){
-    #     nb_years <- rv$inputs$time |>
-    #       dplyr::filter(period_type == x) |>
-    #       dplyr::pull("nb_years") |>
-    #       sum()
-    #     period_ids <- rv$inputs$time |>
-    #       dplyr::filter(period_type == x) |>
-    #       dplyr::pull("period_no")
-    #     rv$mcs$sim_trans |>
-    #       dplyr::filter(.data$time_period %in% period_ids) |>
-    #       dplyr::mutate(E = round(E / nb_years, 0))
-    #   }) |> purrr::list_rbind()
-    # } else {
-    #   tt <- rv$mcs$sim_trans2 <- rv$mcs$sim_trans
-    # }
+  sims_Eannual <- sims_E |>
+    dplyr::left_join(
+      dplyr::select(.time, "period_no", period_length = "nb_years", "period_type"),
+      by = dplyr::join_by("time_period" == "period_no")
+    ) |>
+    dplyr::mutate(
+      E_year = round(.data$E / .data$period_length, .setup$digits)
+    ) |>
+    dplyr::select(
+      "time_period", "period_length", "period_type", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+      "sim_no", "E_year", "E", dplyr::everything()
+    )
 
+  ## Regrouped action, if AD is annual period_length is 1. Added period_type.
+  # if (.setup$ad_annual) {
+  #   sims_Eannual <- sims_E |>
+  #     dplyr::mutate(time_period_length = 1, E_year = .data$E) |>
+  #     dplyr::select(
+  #       "time_period", "time_period_length", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+  #       "sim_no", "E_year", "E", dplyr::everything()
+  #     )
+  #   } else {
+  #     sims_Eannual <- sims_E |>
+  #       dplyr::left_join(
+  #         dplyr::select(.time, "period_no", time_period_length = "nb_years"),
+  #         by = dplyr::join_by("time_period" == "period_no")
+  #         ) |>
+  #       dplyr::mutate(
+  #         E_year = round(.data$E / .data$time_period_length, .setup$digits)
+  #       ) |>
+  #       dplyr::select(
+  #         "time_period", "time_period_length", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+  #         "sim_no", "E_year", "E", dplyr::everything()
+  #       )
+  #   }
 
 
   ##

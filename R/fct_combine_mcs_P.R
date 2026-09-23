@@ -66,6 +66,7 @@ fct_combine_mcs_P <- function(
 
       .data |>
         dplyr::filter(.data$time_period %in% time_p) |>
+        dplyr::select(-dplyr::any_of("period_type")) |>
         dplyr::left_join(time_sub, by = c("time_period" = "period_no")) |>
         dplyr::summarise(E = round(sum(.data$E * .data$nb_years) / time_l, 0), .by = c("sim_no", "period_type"))
 
@@ -87,6 +88,7 @@ fct_combine_mcs_P <- function(
 
       .data |>
         dplyr::filter(.data$time_period %in% time_p) |>
+        dplyr::select(-dplyr::any_of("period_type")) |>
         dplyr::left_join(time_sub, by = c("time_period" = "period_no")) |>
         dplyr::summarise(E = round(sum(.data$E) / time_l, 0), .by = c("sim_no", "period_type"))
 
