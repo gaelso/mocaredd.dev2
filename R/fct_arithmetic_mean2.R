@@ -44,19 +44,15 @@ fct_arithmetic_mean2 <- function(.checked_data){
   # .checked_data <- fct_checkinput(.path = path)
   ## !!!
 
-  setup  <- .checked_data$data$setup
-  time   <- .checked_data$data$time
-  area   <- .checked_data$data$area
-  carbon <- .checked_data$data$carbon
-  is_v2  <- isTRUE(.checked_data$template_version == 2)
-
-  if (!"nb_years" %in% names(time)) {
-    time <- time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
-  }
-  ad_annual <- isTRUE(setup$ad_annual)
+  setup     <- .checked_data$data$setup
+  time      <- .checked_data$data$time
+  area      <- .checked_data$data$area
+  carbon    <- .checked_data$data$carbon
+  is_v2     <- isTRUE(.checked_data$template_version == 2)
+  is_annual <- isTRUE(setup$ad_annual)
 
   ## z value for the requested confidence level (two-sided)
-  z <- stats::qnorm(1 - (1 - setup$conf_level) / 2)
+  z_score <- .checked_data$data$setup$z_score
 
   ##
   ## 1. Carbon formula and degradation handling (mirror fct_combine_mcs_E) ######
@@ -161,7 +157,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
     Et <- purrr::map_dbl(seq_along(a_id), function(i) {
       pm[[paste0("AD..", a_id[i])]] * (C_of(a_li[i], pm) - C_of(a_lf[i], pm)) * 44 / 12
     })
-    Ey <- if (ad_annual) Et else Et / nb_years[a_period]
+    Ey <- if (is_annual) Et else Et / nb_years[a_period]
 
     out <- c()
     for (p in unique(a_period)) {
@@ -175,7 +171,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
       per <- names(ptype)[ptype %in% pt & !is.na(ptype)]
       Ty  <- sum(nb_years[per])
       sel <- a_period %in% per
-      out[paste0("PT.", pt)] <- if (ad_annual) sum(Et[sel] * nb_years[a_period[sel]]) / Ty else sum(Et[sel]) / Ty
+      out[paste0("PT.", pt)] <- if (is_annual) sum(Et[sel] * nb_years[a_period[sel]]) / Ty else sum(Et[sel]) / Ty
     }
     if (length(ref_types) >= 1) {
       refv <- out[[paste0("PT.", ref_types[1])]]
@@ -205,8 +201,8 @@ fct_arithmetic_mean2 <- function(.checked_data){
   ## helper to fetch (mean, se, U%) for one output key
   stat_of <- function(key) {
     m <- unname(m0[key]); s <- unname(se_out[key])
-    u <- if (is.na(m) || m == 0) NA_real_ else z * s / abs(m) * 100
-    list(mean = m, se = s, U = u, lower = m - z * s, upper = m + z * s)
+    u <- if (is.na(m) || m == 0) NA_real_ else z_score * s / abs(m) * 100
+    list(mean = m, se = s, U = u, lower = m - z_score * s, upper = m + z_score * s)
   }
 
   ##

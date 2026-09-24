@@ -23,11 +23,7 @@ mod_tool_server2 <- function(id, rv) {
     ns <- session$ns
 
     ## !!! FOR TESTING ONLY
-    # rv <- list(checks = list(), inputs = list(), sims = list(), res = list())
-    # .path = system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
-    # check_result = fct_checkinput(.path = .path, .minislow = 0.2)
-    # rv$checks$all_ok <- isTRUE(check_result$all_ok)
-    # rv$inputs <- check_result$data
+    ## To run test on core elements, see tests/running-core-functions
     ## !!!
 
     ##

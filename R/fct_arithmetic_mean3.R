@@ -63,19 +63,15 @@ fct_arithmetic_mean3 <- function(.checked_data){
   # .checked_data <- fct_checkinput(.path = path)
   ## !!!
 
-  setup  <- .checked_data$data$setup
-  time   <- .checked_data$data$time
-  area   <- .checked_data$data$area
-  carbon <- .checked_data$data$carbon
-  is_v2  <- isTRUE(.checked_data$template_version == 2)
-
-  if (!"nb_years" %in% names(time)) {
-    time <- time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
-  }
+  setup     <- .checked_data$data$setup
+  time      <- .checked_data$data$time
+  area      <- .checked_data$data$area
+  carbon    <- .checked_data$data$carbon
+  is_v2     <- isTRUE(.checked_data$template_version == 2)
+  is_annual <- isTRUE(setup$ad_annual)
 
   ## z value for the requested confidence level (two-sided)
-  z <- stats::qnorm(1 - (1 - setup$conf_level) / 2)
-
+  z_score <- .checked_data$data$setup$z_score
 
   ## TOC ####
   ## 1. Preparation: carbon elements, carbon fraction, degradation settings, formulas
@@ -212,7 +208,7 @@ fct_arithmetic_mean3 <- function(.checked_data){
   c_stock <- c_stock |>
     dplyr::filter(!stringr::str_detect(.data$c_lu_id, "\\.\\.(DG|noDG)$")) |>
     dplyr::bind_rows(dplyr::select(c_stock_dg, "c_lu_id", "c_form", "c_form_U", "C", "C_se")) |>
-    dplyr::mutate(C_U = dplyr::if_else(.data$C == 0, NA_real_, z * .data$C_se / abs(.data$C) * 100))
+    dplyr::mutate(C_U = dplyr::if_else(.data$C == 0, NA_real_, z_score * .data$C_se / abs(.data$C) * 100))
 
 
   ##
@@ -260,7 +256,7 @@ fct_arithmetic_mean3 <- function(.checked_data){
       E_se      = sqrt((.data$EF * .data$AD_se)^2 + (.data$AD * .data$EF_se)^2),
       E_year    = if (setup$ad_annual) .data$E    else .data$E    / .data$period_length,
       E_year_se = if (setup$ad_annual) .data$E_se else .data$E_se / .data$period_length,
-      E_year_U  = z * .data$E_year_se / abs(.data$E_year) * 100
+      E_year_U  = z_score * .data$E_year_se / abs(.data$E_year) * 100
     )
 
 
@@ -327,9 +323,9 @@ fct_arithmetic_mean3 <- function(.checked_data){
     )) |>
     dplyr::bind_rows(e_er) |>
     dplyr::mutate(
-      E_U     = z * .data$E_se / abs(.data$E) * 100,
-      E_lower = .data$E - z * .data$E_se,
-      E_upper = .data$E + z * .data$E_se
+      E_U     = z_score * .data$E_se / abs(.data$E) * 100,
+      E_lower = .data$E - z_score * .data$E_se,
+      E_upper = .data$E + z_score * .data$E_se
     )
 
   ## + 8.2. Emissions per time period ####
@@ -338,7 +334,7 @@ fct_arithmetic_mean3 <- function(.checked_data){
     dplyr::left_join(dplyr::select(e_period, period_no = "trans_period", "E", "E_se"), by = "period_no") |>
     dplyr::arrange(.data$year_start) |>
     dplyr::mutate(
-      E_U   = z * .data$E_se / abs(.data$E) * 100,
+      E_U   = z_score * .data$E_se / abs(.data$E) * 100,
       years = dplyr::if_else(.data$year_start == .data$year_end, as.character(.data$year_start),
                              paste0(.data$year_start, "-", .data$year_end))
     )
@@ -348,8 +344,8 @@ fct_arithmetic_mean3 <- function(.checked_data){
     dplyr::mutate(year = purrr::map2(.data$year_start, .data$year_end, seq)) |>
     tidyr::unnest_longer("year") |>
     dplyr::mutate(
-      E_lower = round((.data$E - z * .data$E_se) / 1e6, 2),
-      E_upper = round((.data$E + z * .data$E_se) / 1e6, 2),
+      E_lower = round((.data$E - z_score * .data$E_se) / 1e6, 2),
+      E_upper = round((.data$E + z_score * .data$E_se) / 1e6, 2),
       E       = round(.data$E / 1e6, 2),
       FREL    = round(frel$E / 1e6, 2)
     )
