@@ -54,8 +54,7 @@ conformity checks:
 \item Cross-table matching and logical consistency
 }
 
-Each check emits a \code{message()} prefixed with \code{"\u2713"} (pass) or
-\code{"\u2717"} (fail), so results can be captured outside the function with
+Each check emits a \code{message()}, so results can be captured outside the function with
 \code{withCallingHandlers(message = ...)} and displayed in a console-style UI
 element. A \code{shinyWidgets} progress bar is advanced after each of the
 \code{n_steps} steps (1 load + 6 checks).

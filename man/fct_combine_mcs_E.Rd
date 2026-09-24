@@ -20,8 +20,6 @@ transition, REDD+ activity or emission reductions level.
 TBD
 }
 \examples{
-library(mocaredd)
-
 path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 
 checked <- fct_checkinput(.path = path)

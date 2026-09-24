@@ -33,8 +33,6 @@ which can also be expressed in ton of dry matter (DM) if a carbon fraction
 'CF' is provided.
 }
 \examples{
-library(mocaredd)
-
 c_el <- c("AGB", "RS", "DW")
 
 fct_make_formula(.c_el = c_el, .c_unit = "DM")

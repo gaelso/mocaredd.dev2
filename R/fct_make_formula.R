@@ -23,8 +23,6 @@
 #' @return A character value with the formula for calculating total carbon stock.
 #'
 #' @examples
-#' library(mocaredd)
-#'
 #' c_el <- c("AGB", "RS", "DW")
 #'
 #' fct_make_formula(.c_el = c_el, .c_unit = "DM")

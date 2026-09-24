@@ -31,7 +31,7 @@ mod_tool_server2 <- function(id, rv) {
     ## !!!
 
     ##
-    ## 1. SIDEBAR — LOAD & CHECK ###############################################
+    ## 1. SIDEBAR - LOAD & CHECK ###############################################
     ##
 
     ## 1.1 Download templates ==================================================
@@ -263,10 +263,11 @@ mod_tool_server2 <- function(id, rv) {
       rv$checks$ari_res$emissions_table |>
         gt::gt(rowname_col = "item", groupname_col = "grp") |>
         gt::tab_spanner(label = "Emissions (tCO2e/yr)", columns = c("DF", "DG", "total")) |>
-        gt::cols_label(years = "Years", DF = "Deforestation", DG = "Degradation", total = "Total") |>
+        gt::cols_label(years = "Years", DF = "Deforestation", DG = "Degradation", total = "Total", U_pct = "U (%)") |>
         gt::fmt_number(columns = c("DF", "DG", "total"), decimals = 0, use_seps = TRUE) |>
+        gt::fmt_number(columns = "U_pct", decimals = 1, pattern = "{x}%") |>
         gt::sub_missing(columns = gt::everything(), missing_text = "") |>
-        gt::cols_align(align = "right", columns = c("DF", "DG", "total"))
+        gt::cols_align(align = "right", columns = c("DF", "DG", "total", "U_pct"))
     })
 
     ## 2.2 Arithmetic mean plot ================================================
@@ -330,7 +331,7 @@ mod_tool_server2 <- function(id, rv) {
 
 
     ##
-    ## 3. SIDEBAR — RUN MCS ####################################################
+    ## 3. SIDEBAR - RUN MCS ####################################################
     ##
 
     observeEvent(input$btn_run_mcs, {
@@ -382,18 +383,10 @@ mod_tool_server2 <- function(id, rv) {
         dplyr::mutate(redd_id = paste0(.data$time_period, " - ", .data$redd_activity))
 
       rv$mcs$sim_REF <- rv$mcs$sim_trans |>
-        fct_combine_mcs_P(
-          .time        = rv$inputs$time,
-          .period_type = "REF",
-          .ad_annual   = rv$inputs$setup$ad_annual
-        )
+        fct_combine_mcs_P(.period_type = "REF")
 
       rv$mcs$sim_MON <- rv$mcs$sim_trans |>
-        fct_combine_mcs_P(
-          .time        = rv$inputs$time,
-          .period_type = "MON",
-          .ad_annual   = rv$inputs$setup$ad_annual
-        )
+        fct_combine_mcs_P(.period_type = "MON")
 
       rv$mcs$sim_ER <- fct_combine_mcs_ER(
         .sim_ref   = rv$mcs$sim_REF,
@@ -466,7 +459,7 @@ mod_tool_server2 <- function(id, rv) {
 
       ## No-binding hack for R CMD check
       trans_id <- redd_id <- period_type <- NULL
-      E <- E_ari <- E_U <- E_cilower <- E_ciupper <- NULL
+      E <- E_ari <- E_U_ari <- E_U <- E_cilower <- E_ciupper <- NULL
       E_year <- ER_sim <- NULL
 
       rv$mcs$fp_trans <- fct_forestplot(
@@ -496,6 +489,7 @@ mod_tool_server2 <- function(id, rv) {
         .id         = period_type,
         .value      = E,
         .value_ari  = E_ari,
+        .uperc_ari  = E_U_ari,
         .uperc      = E_U,
         .cilower    = E_cilower,
         .ciupper    = E_ciupper,

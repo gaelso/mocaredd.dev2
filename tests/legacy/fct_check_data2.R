@@ -18,7 +18,6 @@
 #'
 #' @examples
 #'
-#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd.dev2")
 #' path <- system.file("extdata/mocaredd-template-v2-4pools.xlsx", package = "mocaredd.dev2")
 #'
 #' tabs <- c("user", "time", "area", "carbon")

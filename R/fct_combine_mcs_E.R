@@ -14,8 +14,6 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-#' library(mocaredd)
-#'
 #' path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 #'
 #' checked <- fct_checkinput(.path = path)
@@ -102,7 +100,7 @@ fct_combine_mcs_E <- function(.checked_data){
       ) |>
       dplyr::rowwise() |>
       dplyr::mutate(
-        c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = .data$c_un, .version = 2)
+        c_form = fct_make_formula2(.c_el = .data$c_el, .c_unit = .data$c_un, .version = 2)
       ) |>
       dplyr::ungroup() |>
       dplyr::select(time_period = "c_period", lu_id = "c_lu_id", "c_form")
@@ -111,7 +109,7 @@ fct_combine_mcs_E <- function(.checked_data){
       dplyr::summarise(c_el = list(c(.data$c_element)), .by = c("c_period", "c_lu_id")) |>
       dplyr::rowwise() |>
       dplyr::mutate(
-        c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = .setup$c_unit, .version = 1)
+        c_form = fct_make_formula2(.c_el = .data$c_el, .c_unit = .setup$c_unit, .version = 1)
       ) |>
       dplyr::ungroup() |>
       dplyr::select(time_period = "c_period", lu_id = "c_lu_id", "c_form")
@@ -358,13 +356,16 @@ fct_combine_mcs_E <- function(.checked_data){
   ## 5. prepare annualized emissions E_year ####
   ##
 
+  ## If AD is annual, E is annual: scale to the transition's period so that
+  ## E is always the period total and E_year always the annual value.
   sims_Eannual <- sims_E |>
     dplyr::left_join(
       dplyr::select(.time, "period_no", period_length = "nb_years", "period_type"),
       by = dplyr::join_by("time_period" == "period_no")
     ) |>
     dplyr::mutate(
-      E_year = round(.data$E / .data$period_length, .setup$digits)
+      E =      if (.setup$ad_annual) .data$E * .data$period_length else .data$E,
+      E_year = if (.setup$ad_annual) .data$E                       else round(.data$E / .data$period_length, .setup$digits)
     ) |>
     dplyr::select(
       "time_period", "period_length", "period_type", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
@@ -428,7 +429,7 @@ fct_combine_mcs_E <- function(.checked_data){
   #   dplyr::summarise(c_el = list(c(.data$c_element)), .by = c("c_period", "c_lu_id")) |>
   #   dplyr::rowwise() |>
   #   dplyr::mutate(
-  #     c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = .setup$c_unit)
+  #     c_form = fct_make_formula2(.c_el = .data$c_el, .c_unit = .setup$c_unit)
   #   ) |>
   #   dplyr::ungroup() |>
   #   dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_form")

@@ -13,8 +13,7 @@
 #'   \item Cross-table matching and logical consistency
 #' }
 #'
-#' Each check emits a \code{message()} prefixed with \code{"\u2713"} (pass) or
-#' \code{"\u2717"} (fail), so results can be captured outside the function with
+#' Each check emits a \code{message()}, so results can be captured outside the function with
 #' \code{withCallingHandlers(message = ...)} and displayed in a console-style UI
 #' element. A \code{shinyWidgets} progress bar is advanced after each of the
 #' \code{n_steps} steps (1 load + 6 checks).
@@ -212,7 +211,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   ## State #####################################################################
   ##
 
-  ## 1 load step + 6 checks — update this if steps are added or removed
+  ## 1 load step + 6 checks - update this if steps are added or removed
   n_steps <- 7L
   pb_factor <- .pb_max / n_steps
 
@@ -477,19 +476,19 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   if (check_version == 2) {
     area <- area |>
       dplyr::mutate(
-        lu_initial_id = label2id(lu_initial),
-        lu_final_id = label2id(lu_final),
+        lu_initial_id = label2id(.data$lu_initial),
+        lu_final_id = label2id(.data$lu_final),
         #trans_id = paste(trans_period, lu_initial_id, "2", lu_final_id, sep = "*")
-        trans_id = paste(trans_period, lu_initial_id, lu_final_id, sep = "*")
+        trans_id = paste(.data$trans_period, .data$lu_initial_id, .data$lu_final_id, sep = "*")
       )
 
     unique_c_period <- length(unique(carbon$c_period)) == 1 & unique(carbon$c_period) == "ALL"
 
     carbon <- carbon |>
       dplyr::mutate(
-        c_lu_id = label2id(c_lu),
-        c_plu_id = if (unique_c_period) c_lu_id else paste(c_period, c_lu_id, sep = "*"),
-        c_id = if (unique_c_period) paste(c_lu_id, c_element, sep = "*") else paste(c_period, c_lu_id, c_element, sep = "*")
+        c_lu_id = label2id(.data$c_lu),
+        c_plu_id = if (unique_c_period) .data$c_lu_id else paste(.data$c_period, .data$c_lu_id, sep = "*"),
+        c_id = if (unique_c_period) paste(.data$c_lu_id, .data$c_element, sep = "*") else paste(.data$c_period, .data$c_lu_id, .data$c_element, sep = "*")
       )
   }
 
@@ -576,8 +575,8 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   ## + Match RS with AGB ------
   ## if RS is use, there should be AGB for the same LU
   check_match_rsagb1 <- if ("RS" %in% unique(carbon$c_element)) {
-    lu_rs <- carbon |> dplyr::filter(c_element == "RS") |> dplyr::pull(c_plu_id) |> sort()
-    lu_agb <- carbon |> dplyr::filter(c_element == "AGB") |> dplyr::pull(c_plu_id) |> sort()
+    lu_rs <- carbon |> dplyr::filter(.data$c_element == "RS") |> dplyr::pull("c_plu_id") |> sort()
+    lu_agb <- carbon |> dplyr::filter(.data$c_element == "AGB") |> dplyr::pull("c_plu_id") |> sort()
     length(setdiff(lu_rs, lu_agb)) == 0
   } else {
     TRUE
@@ -657,7 +656,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
       session = .pb_session,
       id      = .pb_id,
       value   = 100,
-      title   = if (all_ok) "All checks passed!" else "Some checks failed — see details.",
+      title   = if (all_ok) "All checks passed!" else "Some checks failed - see details.",
       status  = if (all_ok) "success" else "danger"
     )
   }

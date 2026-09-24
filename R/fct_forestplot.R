@@ -8,6 +8,8 @@
 #' @param .data a data frame containing the simulation aggregated results
 #' @param .id the name of the ID column of the data frame
 #' @param .value_ari NULL if not relevant (most cases) or a column name with the arithmetic mean of Emission or emission reductions.
+#' @param .uperc_ari NULL if not relevant or a column name with the percentage uncertainty of the arithmetic mean.
+#'                   Only used with \code{.value_ari}.
 #' @param .value the name of the value column of the data frame (i.e median of the simulations)
 #' @param .uperc the name of the percentage uncertainty of the simulations
 #' @param .cilower the name of the lower end of confidence interval
@@ -29,6 +31,7 @@ fct_forestplot <- function(
     .data,
     .id,
     .value_ari = NULL,
+    .uperc_ari = NULL,
     .value,
     .uperc,
     .cilower,
@@ -130,9 +133,12 @@ fct_forestplot <- function(
   } else {
 
     col_ari <- rlang::enquo(.value_ari)
+    has_uari <- !missing(.uperc_ari)
+    col_uari <- rlang::enquo(.uperc_ari)
+    ari_cols <- if (has_uari) c(rlang::as_name(col_ari), rlang::as_name(col_uari)) else rlang::as_name(col_ari)
 
     gt_out <- .data |>
-      dplyr::select(!!col_id, !!col_ari, !!col_value, !!col_uperc, !!col_cilo, !!col_ciup) |>
+      dplyr::select(!!col_id, dplyr::all_of(ari_cols), !!col_value, !!col_uperc, !!col_cilo, !!col_ciup) |>
       dplyr::mutate(
         plot = !!col_id,
         !!col_cilo := dplyr::if_else(!!col_cilo == 0, NA_integer_, !!col_cilo),
@@ -141,7 +147,7 @@ fct_forestplot <- function(
       gt::gt() |>
       gt::cols_label(
         !!col_id := gt::md(.id_colname),
-        !!col_ari := gt::md("Arithmetic<br>mean<br>(tCO2/y)"),
+        !!col_ari := "tCO2/year",
         !!col_value := "E (tCO2/y)",
         !!col_uperc := "U (%)",
         !!col_cilo  := paste0("CI (", .conflevel, ")"),
@@ -162,6 +168,16 @@ fct_forestplot <- function(
         columns = "E_U",
         missing_text = "-"
       ) |>
+      gt::tab_spanner(label = "Arithmetic mean", columns = dplyr::all_of(ari_cols))
+
+    if (has_uari) {
+      gt_out <- gt_out |>
+        gt::cols_label(!!col_uari := "U (%)") |>
+        gt::fmt_number(columns = rlang::as_name(col_uari), decimals = 1, pattern = "{x}%") |>
+        gt::sub_missing(columns = rlang::as_name(col_uari), missing_text = "-")
+    }
+
+    gt_out <- gt_out |>
       gt::text_transform(
         locations = gt::cells_body(columns = 'plot'),
         fn = function(column) {

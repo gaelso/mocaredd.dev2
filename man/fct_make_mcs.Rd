@@ -34,8 +34,6 @@ a vector of N simulation with N, the number of iterations (.n_iter)
 TBD
 }
 \examples{
-library(mocaredd)
-
 tt <- fct_make_mcs(.pdf = "normal", .mean = 0, .se = 1)
 hist(tt)
 

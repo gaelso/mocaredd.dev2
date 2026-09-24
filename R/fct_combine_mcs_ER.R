@@ -13,27 +13,15 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-#' library(mocaredd)
-#'
 #' path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 #'
 #' checked <- fct_checkinput(.path = path)
 #'
 #' sim_trans <- fct_combine_mcs_E(.checked_data = checked)
 #'
-#' sim_REF <- fct_combine_mcs_P(
-#'   .data = sim_trans,
-#'   .time = checked$data$time,
-#'   .period_type = "REF",
-#'   .ad_annual = checked$data$setup$ad_annual
-#' )
+#' sim_REF <- fct_combine_mcs_P(.data = sim_trans, .period_type = "REF")
 #'
-#' sim_MON <- fct_combine_mcs_P(
-#'   .data = sim_trans,
-#'   .time = checked$data$time,
-#'   .period_type = "MON",
-#'   .ad_annual = checked$data$setup$ad_annual
-#' )
+#' sim_MON <- fct_combine_mcs_P(.data = sim_trans, .period_type = "MON")
 #'
 #' ## !!! SIM MON and ER to be done
 #'

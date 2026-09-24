@@ -30,8 +30,6 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-#' library(mocaredd)
-#'
 #' path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 #'
 #' checked <- fct_checkinput(.path = path)
@@ -76,13 +74,13 @@ fct_arithmetic_mean2 <- function(.checked_data){
       dplyr::summarise(c_el = list(c(.data$c_element)), c_un = list(c(.data$c_unit)),
                        .by = c("c_period", "c_lu_id")) |>
       dplyr::rowwise() |>
-      dplyr::mutate(c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = .data$c_un, .version = 2)) |>
+      dplyr::mutate(c_form = fct_make_formula2(.c_el = .data$c_el, .c_unit = .data$c_un, .version = 2)) |>
       dplyr::ungroup()
   } else {
     c_formula <- carbon_pools |>
       dplyr::summarise(c_el = list(c(.data$c_element)), .by = c("c_period", "c_lu_id")) |>
       dplyr::rowwise() |>
-      dplyr::mutate(c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = setup$c_unit, .version = 1)) |>
+      dplyr::mutate(c_form = fct_make_formula2(.c_el = .data$c_el, .c_unit = setup$c_unit, .version = 1)) |>
       dplyr::ungroup()
   }
   form_of <- stats::setNames(c_formula$c_form, c_formula$c_lu_id)

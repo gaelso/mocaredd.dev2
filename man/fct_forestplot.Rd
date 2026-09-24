@@ -8,6 +8,7 @@ fct_forestplot(
   .data,
   .id,
   .value_ari = NULL,
+  .uperc_ari = NULL,
   .value,
   .uperc,
   .cilower,
@@ -23,6 +24,9 @@ fct_forestplot(
 \item{.id}{the name of the ID column of the data frame}
 
 \item{.value_ari}{NULL if not relevant (most cases) or a column name with the arithmetic mean of Emission or emission reductions.}
+
+\item{.uperc_ari}{NULL if not relevant or a column name with the percentage uncertainty of the arithmetic mean.
+Only used with \code{.value_ari}.}
 
 \item{.value}{the name of the value column of the data frame (i.e median of the simulations)}
 
