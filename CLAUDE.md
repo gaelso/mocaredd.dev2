@@ -30,7 +30,7 @@ sims    <- fct_combine_mcs_E(.checked_data = checked)      # MC per transition
 sa      <- fct_sensitivity2(.checked_data = checked)
 ```
 
-There is no testthat suite yet (`tests/tuto-pkg.R` is a setup notebook, not tests). Adding `tests/testthat/` with regression tests on the extdata workbooks is welcome.
+testthat suite started in `tests/testthat/` (`devtools::test()`); `fct_make_formula2()`, `fct_make_formula_U()`, `fct_arithmetic_mean3()`. `tests/tuto-pkg.R` is a setup notebook, not tests. Regression tests on the extdata workbooks are welcome.
 
 ## Code map
 
@@ -44,11 +44,12 @@ There is no testthat suite yet (`tests/tuto-pkg.R` is a setup notebook, not test
 
 1. `fct_checkinput()` reads and validates the xlsx, detects `template_version` (1 or 2), returns `$data` with `setup`, `time`, `area`, `carbon`. Every downstream function takes `.checked_data`.
 2. `fct_arithmetic_mean2()`: deterministic means and IPCC Approach 1 propagation.
+   `fct_arithmetic_mean3()`: same outputs, step-by-step IPCC Approach 1 (product/sum rules on the `fct_make_formula2()` terms, `(1 + RS)` resolved first, `(1 - DG_ratio) * C_intact` for intact→degraded EF). Assumes independent terms, so ER uncertainty is higher than MC when REF and MON share EFs. Not yet wired into the app.
 3. `fct_combine_mcs_E()`: simulates CF, carbon elements, AD; builds C stocks (incl. DG_ratio), EF = C_i − C_f, E = AD × EF per transition and simulation.
 4. `fct_combine_mcs_P()`: aggregates to periods (reference / monitoring).
 5. `fct_combine_mcs_ER()`: emission reductions.
 6. `fct_calc_res()`, `fct_forestplot()`, `fct_histogram()`, `fct_round()`: results and outputs.
-7. Helpers: `fct_make_mcs()` (PDF draws), `fct_make_formula()`, `fct_make_EF()`.
+7. Helpers: `fct_make_mcs()` (PDF draws), `fct_make_formula2()` (carbon stock formula, biomass factored: `AGB * (1 + RS) * CF`; `fct_make_formula()` kept for comparison), `fct_make_formula_U()` (matching se formula, IPCC Approach 1 product/sum rules, evaluated with `<el>` and `<el>_se`), `fct_make_EF()`.
 
 **Legacy v1** (not wired in the app; keep until replacement confirmed, don't extend): `mod_home_UI`, `mod_home_server`, `mod_tool_UI`, `mod_tool_server`, `fct_check_data2`, `fct_arithmetic_mean`, `fct_sensitivity` (unexported).
 
