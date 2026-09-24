@@ -33,9 +33,6 @@ A tibble with simulations at the final estimate per type of period.
 ## Examples
 
 ``` r
-library(mocaredd)
-#> Error in library(mocaredd): there is no package called ‘mocaredd’
-
 path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 
 checked <- fct_checkinput(.path = path)
@@ -57,23 +54,9 @@ checked <- fct_checkinput(.path = path)
 
 sim_trans <- fct_combine_mcs_E(.checked_data = checked)
 
-sim_REF <- fct_combine_mcs_P(
-  .data = sim_trans,
-  .time = checked$data$time,
-  .period_type = "REF",
-  .ad_annual = checked$data$setup$ad_annual
-)
-#> Error in dplyr::select(dplyr::filter(.time, !is.na(.data$period_type),     stringr::str_detect(.data$period_type, pattern = .period_type)),     "period_no", "period_type", "nb_years"): Can't select columns that don't exist.
-#> ✖ Column `nb_years` doesn't exist.
+sim_REF <- fct_combine_mcs_P(.data = sim_trans, .period_type = "REF")
 
-sim_MON <- fct_combine_mcs_P(
-  .data = sim_trans,
-  .time = checked$data$time,
-  .period_type = "MON",
-  .ad_annual = checked$data$setup$ad_annual
-)
-#> Error in dplyr::select(dplyr::filter(.time, !is.na(.data$period_type),     stringr::str_detect(.data$period_type, pattern = .period_type)),     "period_no", "period_type", "nb_years"): Can't select columns that don't exist.
-#> ✖ Column `nb_years` doesn't exist.
+sim_MON <- fct_combine_mcs_P(.data = sim_trans, .period_type = "MON")
 
 ## !!! SIM MON and ER to be done
 ```

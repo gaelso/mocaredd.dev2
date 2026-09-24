@@ -123,11 +123,10 @@ perturb the source inputs, not transition-level EFs.
 
 Two tracks:
 
-- [`fct_sensitivity2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_sensitivity2.md)
-  (package): delta-method first-order contributions grouped by input
-  type, plus DF/DG emissions split. Exported, documented in
-  `vignettes/sensitivity-analysis.Rmd`. Not yet called from
-  `mod_tool_server2` — wiring it into the Tool tab is an open task.
+- `fct_sensitivity2()` (package): delta-method first-order contributions
+  grouped by input type, plus DF/DG emissions split. Exported,
+  documented in `vignettes/sensitivity-analysis.Rmd`. Not yet called
+  from `mod_tool_server2` — wiring it into the Tool tab is an open task.
 - `tests/sensitivity/sensitivity.R` (standalone, not a testthat test):
   runs the simulator once on the UGA template, then (A) grouped Shapley
   of `Var(ERR)` over five groups and (B) a tornado of every AD source.
@@ -219,9 +218,8 @@ first-order Sobol’ = SensIt “Percent Swing²”; this breaks for EF/carbon
   [`fct_combine_mcs_P()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_P.md)
   (which weights by years, and multiplies by `nb_years` when
   `ad_annual`) before using multi-year periods.
-- Compare Part A with
-  [`fct_sensitivity2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_sensitivity2.md)
-  on the same workbook before integrating either into the app.
+- Compare Part A with `fct_sensitivity2()` on the same workbook before
+  integrating either into the app.
 - `sensitivity` package versions: check `shapleyPermEx` /
   `sobolshap_knn` argument names.
 

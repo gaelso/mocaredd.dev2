@@ -41,9 +41,6 @@ A character value with the formula for calculating total carbon stock.
 ## Examples
 
 ``` r
-library(mocaredd)
-#> Error in library(mocaredd): there is no package called ‘mocaredd’
-
 c_el <- c("AGB", "RS", "DW")
 
 fct_make_formula(.c_el = c_el, .c_unit = "DM")

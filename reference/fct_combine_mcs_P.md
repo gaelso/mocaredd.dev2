@@ -1,32 +1,26 @@
 # Combine MCS of emissions to a defined time period
 
-Depending on how the period is defined and if the data are annualized or
-not, calculate the Emission Level for a reference or monitoring period
-for each simulation.
+Calculate the Emission Level for a reference or monitoring period for
+each simulation, as the length-weighted average of the annual emissions
+(E_year) of the periods it contains.
 
 ## Usage
 
 ``` r
-fct_combine_mcs_P(.data, .time, .period_type, .ad_annual)
+fct_combine_mcs_P(.data, .period_type)
 ```
 
 ## Arguments
 
 - .data:
 
-  a data frame containing the simulations
-
-- .time:
-
-  the 'time' table from the tool input file (see template)
+  a data frame containing the simulations, output of
+  fct_combine_mcs_E(). Must contain time_period, period_length,
+  period_type, sim_no and E_year.
 
 - .period_type:
 
-  "reference" or "monitoring"
-
-- .ad_annual:
-
-  TRUE or FALSE, is the activity data annualized or not.
+  "REF" or "MON", matched against the period_type column.
 
 ## Value
 
@@ -35,9 +29,6 @@ A tibble with simulations at the final estimate per type of period.
 ## Examples
 
 ``` r
-library(mocaredd)
-#> Error in library(mocaredd): there is no package called ‘mocaredd’
-
 path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 
 checked <- fct_checkinput(.path = path)
@@ -59,17 +50,10 @@ checked <- fct_checkinput(.path = path)
 
 sim_trans <- fct_combine_mcs_E(.checked_data = checked)
 
-sim_FREL <- fct_combine_mcs_P(
-  .data = sim_trans,
-  .time = checked$data$time,
-  .period_type = "REF",
-  .ad_annual = checked$data$setup$ad_annual
-)
-#> Error in dplyr::select(dplyr::filter(.time, !is.na(.data$period_type),     stringr::str_detect(.data$period_type, pattern = .period_type)),     "period_no", "period_type", "nb_years"): Can't select columns that don't exist.
-#> ✖ Column `nb_years` doesn't exist.
+sim_FREL <- fct_combine_mcs_P(.data = sim_trans, .period_type = "REF")
 
 hist(sim_FREL$E)
-#> Error: object 'sim_FREL' not found
+
 round(median(sim_FREL$E))
-#> Error: object 'sim_FREL' not found
+#> [1] 20714297
 ```

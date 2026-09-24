@@ -1,16 +1,15 @@
 # Calculate emissions and IPCC Tier 1 uncertainty from arithmetic means
 
-Analytical counterpart of
-[`fct_arithmetic_mean()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_arithmetic_mean.md).
-Instead of Monte Carlo simulations, activity data and emission factors
-are aggregated deterministically and their uncertainty is propagated
-with the IPCC Tier 1 (first-order error propagation) rules: relative
-uncertainties combine in quadrature for products and absolute standard
-errors combine in quadrature for sums / differences. The propagation is
-done numerically over the independent input variables (carbon pool
-values, carbon fraction, degradation ratios and activity data), so
-correlations introduced by shared inputs (e.g. a degraded land use that
-reuses the intact carbon stock, or a global carbon fraction) are handled
+Analytical counterpart of `fct_arithmetic_mean()`. Instead of Monte
+Carlo simulations, activity data and emission factors are aggregated
+deterministically and their uncertainty is propagated with the IPCC Tier
+1 (first-order error propagation) rules: relative uncertainties combine
+in quadrature for products and absolute standard errors combine in
+quadrature for sums / differences. The propagation is done numerically
+over the independent input variables (carbon pool values, carbon
+fraction, degradation ratios and activity data), so correlations
+introduced by shared inputs (e.g. a degraded land use that reuses the
+intact carbon stock, or a global carbon fraction) are handled
 consistently.
 
 The result reports, for each reference / monitoring emission level and
@@ -44,9 +43,6 @@ reductions with mean, se, U\\ (per time period, with uncertainty),
 ## Examples
 
 ``` r
-library(mocaredd)
-#> Error in library(mocaredd): there is no package called ‘mocaredd’
-
 path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 
 checked <- fct_checkinput(.path = path)

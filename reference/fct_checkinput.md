@@ -16,11 +16,11 @@ tables, and runs six conformity checks:
 
 6.  Cross-table matching and logical consistency
 
-Each check emits a [`message()`](https://rdrr.io/r/base/message.html)
-prefixed with `"\u2713"` (pass) or `"\u2717"` (fail), so results can be
-captured outside the function with `withCallingHandlers(message = ...)`
-and displayed in a console-style UI element. A `shinyWidgets` progress
-bar is advanced after each of the `n_steps` steps (1 load + 6 checks).
+Each check emits a [`message()`](https://rdrr.io/r/base/message.html),
+so results can be captured outside the function with
+`withCallingHandlers(message = ...)` and displayed in a console-style UI
+element. A `shinyWidgets` progress bar is advanced after each of the
+`n_steps` steps (1 load + 6 checks).
 
 ## Usage
 

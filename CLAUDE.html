@@ -16,10 +16,6 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/sensitivity-analysis.html">Sensitivity analysis for REDD+ carbon accounting</a></li>
-  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/openforis/mocaredd/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -60,7 +56,7 @@
 <span><span class="va">checked</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fct_checkinput.html">fct_checkinput</a></span><span class="op">(</span>.path <span class="op">=</span> <span class="va">path</span><span class="op">)</span></span>
 <span><span class="va">ari</span>     <span class="op">&lt;-</span> <span class="fu"><a href="reference/fct_arithmetic_mean2.html">fct_arithmetic_mean2</a></span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span>   <span class="co"># Approach 1 / arithmetic</span></span>
 <span><span class="va">sims</span>    <span class="op">&lt;-</span> <span class="fu"><a href="reference/fct_combine_mcs_E.html">fct_combine_mcs_E</a></span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span>      <span class="co"># MC per transition</span></span>
-<span><span class="va">sa</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/fct_sensitivity2.html">fct_sensitivity2</a></span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sa</span>      <span class="op">&lt;-</span> <span class="fu">fct_sensitivity2</span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span></span></code></pre></div>
 <p>There is no testthat suite yet (<code>tests/tuto-pkg.R</code> is a setup notebook, not tests). Adding <code>tests/testthat/</code> with regression tests on the extdata workbooks is welcome.</p>
 </div>
 <div class="section level2">
@@ -101,7 +97,7 @@
 <h2 id="sensitivity-analysis">Sensitivity analysis<a class="anchor" aria-label="anchor" href="#sensitivity-analysis"></a></h2>
 <p>Two tracks:</p>
 <ul><li>
-<code><a href="reference/fct_sensitivity2.html">fct_sensitivity2()</a></code> (package): delta-method first-order contributions grouped by input type, plus DF/DG emissions split. Exported, documented in <code>vignettes/sensitivity-analysis.Rmd</code>. Not yet called from <code>mod_tool_server2</code> — wiring it into the Tool tab is an open task.</li>
+<code>fct_sensitivity2()</code> (package): delta-method first-order contributions grouped by input type, plus DF/DG emissions split. Exported, documented in <code>vignettes/sensitivity-analysis.Rmd</code>. Not yet called from <code>mod_tool_server2</code> — wiring it into the Tool tab is an open task.</li>
 <li>
 <code>tests/sensitivity/sensitivity.R</code> (standalone, not a testthat test): runs the simulator once on the UGA template, then (A) grouped Shapley of <code>Var(ERR)</code> over five groups and (B) a tornado of every AD source. Supersedes the earlier <code>tests/test-sensitivity*.R</code>, <code>sensitivity_analysis.R</code>, <code>tornado_ad.R</code> and the out-of-repo <code>mocaredd_sensitivity_analysis.R</code> / <code>mocaredd_sensit_tornado_AD.R</code> scripts.</li>
 </ul><div class="section level3">
@@ -158,7 +154,7 @@
 <h3 id="open-points">Open points<a class="anchor" aria-label="anchor" href="#open-points"></a></h3>
 <ul><li>Script not yet run since the merge; confirm it runs and regenerate outputs.</li>
 <li>Weights assume what UGA has (1-year periods, <code>ad_annual = TRUE</code>). Since <code><a href="reference/fct_combine_mcs_E.html">fct_combine_mcs_E()</a></code> now always sets <code>period_length = nb_years</code>, check <code>wt_t</code> against <code><a href="reference/fct_combine_mcs_P.html">fct_combine_mcs_P()</a></code> (which weights by years, and multiplies by <code>nb_years</code> when <code>ad_annual</code>) before using multi-year periods.</li>
-<li>Compare Part A with <code><a href="reference/fct_sensitivity2.html">fct_sensitivity2()</a></code> on the same workbook before integrating either into the app.</li>
+<li>Compare Part A with <code>fct_sensitivity2()</code> on the same workbook before integrating either into the app.</li>
 <li>
 <code>sensitivity</code> package versions: check <code>shapleyPermEx</code> / <code>sobolshap_knn</code> argument names.</li>
 </ul><p>References: Song, Nelson &amp; Staum (2016) <em>SIAM/ASA JUQ</em> 4:1060–1083 · Owen (2014) <em>SIAM/ASA JUQ</em> 2:245–251 · Iooss &amp; Prieur (2019) <em>IJUQ</em> 9:493–514 · Mara, Tarantola &amp; Annoni (2015) <em>Environ. Model. Softw.</em> 72:173–183 · Saltelli et al. (2008, 2010) · Sobol’ (1993) · Jansen (1999).</p>

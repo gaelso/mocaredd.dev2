@@ -50,9 +50,6 @@ a vector of N simulation with N, the number of iterations (.n_iter)
 ## Examples
 
 ``` r
-library(mocaredd)
-#> Error in library(mocaredd): there is no package called ‘mocaredd’
-
 tt <- fct_make_mcs(.pdf = "normal", .mean = 0, .se = 1)
 hist(tt)
 
