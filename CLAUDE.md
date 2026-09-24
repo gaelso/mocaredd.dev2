@@ -42,9 +42,12 @@ sims    <- fct_combine_mcs_E(.checked_data = checked)      # MC per transition
 sa      <- fct_sensitivity2(.checked_data = checked)
 ```
 
-There is no testthat suite yet (`tests/tuto-pkg.R` is a setup notebook,
-not tests). Adding `tests/testthat/` with regression tests on the
-extdata workbooks is welcome.
+testthat suite started in `tests/testthat/` (`devtools::test()`);
+[`fct_make_formula2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula2.md),
+[`fct_make_formula_U()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula_U.md),
+[`fct_arithmetic_mean3()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_arithmetic_mean3.md).
+`tests/tuto-pkg.R` is a setup notebook, not tests. Regression tests on
+the extdata workbooks are welcome.
 
 ## Code map
 
@@ -67,6 +70,13 @@ extdata workbooks is welcome.
     downstream function takes `.checked_data`.
 2.  [`fct_arithmetic_mean2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_arithmetic_mean2.md):
     deterministic means and IPCC Approach 1 propagation.
+    [`fct_arithmetic_mean3()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_arithmetic_mean3.md):
+    same outputs, step-by-step IPCC Approach 1 (product/sum rules on the
+    [`fct_make_formula2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula2.md)
+    terms, `(1 + RS)` resolved first, `(1 - DG_ratio) * C_intact` for
+    intact→degraded EF). Assumes independent terms, so ER uncertainty is
+    higher than MC when REF and MON share EFs. Not yet wired into the
+    app.
 3.  [`fct_combine_mcs_E()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_E.md):
     simulates CF, carbon elements, AD; builds C stocks (incl. DG_ratio),
     EF = C_i − C_f, E = AD × EF per transition and simulation.
@@ -82,8 +92,13 @@ extdata workbooks is welcome.
 7.  Helpers:
     [`fct_make_mcs()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_mcs.md)
     (PDF draws),
-    [`fct_make_formula()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula.md),
-    `fct_make_EF()`.
+    [`fct_make_formula2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula2.md)
+    (carbon stock formula, biomass factored: `AGB * (1 + RS) * CF`;
+    [`fct_make_formula()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula.md)
+    kept for comparison),
+    [`fct_make_formula_U()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_formula_U.md)
+    (matching se formula, IPCC Approach 1 product/sum rules, evaluated
+    with `<el>` and `<el>_se`), `fct_make_EF()`.
 
 **Legacy v1** (not wired in the app; keep until replacement confirmed,
 don’t extend): `mod_home_UI`, `mod_home_server`, `mod_tool_UI`,

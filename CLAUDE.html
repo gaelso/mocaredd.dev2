@@ -57,7 +57,7 @@
 <span><span class="va">ari</span>     <span class="op">&lt;-</span> <span class="fu"><a href="reference/fct_arithmetic_mean2.html">fct_arithmetic_mean2</a></span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span>   <span class="co"># Approach 1 / arithmetic</span></span>
 <span><span class="va">sims</span>    <span class="op">&lt;-</span> <span class="fu"><a href="reference/fct_combine_mcs_E.html">fct_combine_mcs_E</a></span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span>      <span class="co"># MC per transition</span></span>
 <span><span class="va">sa</span>      <span class="op">&lt;-</span> <span class="fu">fct_sensitivity2</span><span class="op">(</span>.checked_data <span class="op">=</span> <span class="va">checked</span><span class="op">)</span></span></code></pre></div>
-<p>There is no testthat suite yet (<code>tests/tuto-pkg.R</code> is a setup notebook, not tests). Adding <code>tests/testthat/</code> with regression tests on the extdata workbooks is welcome.</p>
+<p>testthat suite started in <code>tests/testthat/</code> (<code>devtools::test()</code>); <code><a href="reference/fct_make_formula2.html">fct_make_formula2()</a></code>, <code><a href="reference/fct_make_formula_U.html">fct_make_formula_U()</a></code>, <code><a href="reference/fct_arithmetic_mean3.html">fct_arithmetic_mean3()</a></code>. <code>tests/tuto-pkg.R</code> is a setup notebook, not tests. Regression tests on the extdata workbooks are welcome.</p>
 </div>
 <div class="section level2">
 <h2 id="code-map">Code map<a class="anchor" aria-label="anchor" href="#code-map"></a></h2>
@@ -70,7 +70,7 @@
 <ol style="list-style-type: decimal"><li>
 <code><a href="reference/fct_checkinput.html">fct_checkinput()</a></code> reads and validates the xlsx, detects <code>template_version</code> (1 or 2), returns <code>$data</code> with <code>setup</code>, <code>time</code>, <code>area</code>, <code>carbon</code>. Every downstream function takes <code>.checked_data</code>.</li>
 <li>
-<code><a href="reference/fct_arithmetic_mean2.html">fct_arithmetic_mean2()</a></code>: deterministic means and IPCC Approach 1 propagation.</li>
+<code><a href="reference/fct_arithmetic_mean2.html">fct_arithmetic_mean2()</a></code>: deterministic means and IPCC Approach 1 propagation. <code><a href="reference/fct_arithmetic_mean3.html">fct_arithmetic_mean3()</a></code>: same outputs, step-by-step IPCC Approach 1 (product/sum rules on the <code><a href="reference/fct_make_formula2.html">fct_make_formula2()</a></code> terms, <code>(1 + RS)</code> resolved first, <code>(1 - DG_ratio) * C_intact</code> for intact→degraded EF). Assumes independent terms, so ER uncertainty is higher than MC when REF and MON share EFs. Not yet wired into the app.</li>
 <li>
 <code><a href="reference/fct_combine_mcs_E.html">fct_combine_mcs_E()</a></code>: simulates CF, carbon elements, AD; builds C stocks (incl. DG_ratio), EF = C_i − C_f, E = AD × EF per transition and simulation.</li>
 <li>
@@ -79,7 +79,7 @@
 <code><a href="reference/fct_combine_mcs_ER.html">fct_combine_mcs_ER()</a></code>: emission reductions.</li>
 <li>
 <code><a href="reference/fct_calc_res.html">fct_calc_res()</a></code>, <code><a href="reference/fct_forestplot.html">fct_forestplot()</a></code>, <code><a href="reference/fct_histogram.html">fct_histogram()</a></code>, <code><a href="reference/fct_round.html">fct_round()</a></code>: results and outputs.</li>
-<li>Helpers: <code><a href="reference/fct_make_mcs.html">fct_make_mcs()</a></code> (PDF draws), <code><a href="reference/fct_make_formula.html">fct_make_formula()</a></code>, <code>fct_make_EF()</code>.</li>
+<li>Helpers: <code><a href="reference/fct_make_mcs.html">fct_make_mcs()</a></code> (PDF draws), <code><a href="reference/fct_make_formula2.html">fct_make_formula2()</a></code> (carbon stock formula, biomass factored: <code>AGB * (1 + RS) * CF</code>; <code><a href="reference/fct_make_formula.html">fct_make_formula()</a></code> kept for comparison), <code><a href="reference/fct_make_formula_U.html">fct_make_formula_U()</a></code> (matching se formula, IPCC Approach 1 product/sum rules, evaluated with <code>&lt;el&gt;</code> and <code>&lt;el&gt;_se</code>), <code>fct_make_EF()</code>.</li>
 </ol><p><strong>Legacy v1</strong> (not wired in the app; keep until replacement confirmed, don’t extend): <code>mod_home_UI</code>, <code>mod_home_server</code>, <code>mod_tool_UI</code>, <code>mod_tool_server</code>, <code>fct_check_data2</code>, <code>fct_arithmetic_mean</code>, <code>fct_sensitivity</code> (unexported).</p>
 <p><strong>Function conventions:</strong> <code>fct_*</code> for functions, <code>mod_*</code> for modules, arguments prefixed with a dot (<code>.checked_data</code>, <code>.n_iter</code>), native pipe <code>|&gt;</code>, <code>.data$col</code> inside dplyr, <code><a href="https://rlang.r-lib.org/reference/dot-data.html" class="external-link">rlang::.data</a></code> imported.</p>
 </div>
