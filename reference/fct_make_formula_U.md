@@ -50,7 +50,7 @@ A character value with the standard error formula of the carbon stock.
 
 ``` r
 fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = "DM")
-#> [1] "AGB * (1 + RS) * CF * sqrt((AGB_se / AGB)^2 + (RS_se / (1 + RS))^2 + (CF_se / CF)^2)"
+#> Error in names(object) <- nm: 'names' attribute [2] must be the same length as the vector [1]
 #> "AGB * (1 + RS) * CF * sqrt((AGB_se / AGB)^2 + (RS_se / (1 + RS))^2 + (CF_se / CF)^2)"
 
 fct_make_formula_U(.c_el = c("AGB", "RS", "DW"), .c_unit = c("DM", NA, "C"), .version = 2)
@@ -59,5 +59,5 @@ fct_make_formula_U(.c_el = c("AGB", "RS", "DW"), .c_unit = c("DM", NA, "C"), .ve
 ## Evaluate
 env <- list(AGB = 250, AGB_se = 25, RS = 0.24, RS_se = 0.05, CF = 0.47, CF_se = 0.02)
 eval(parse(text = fct_make_formula_U(c("AGB", "RS"), "DM")), env)
-#> [1] 16.88907
+#> Error in names(object) <- nm: 'names' attribute [2] must be the same length as the vector [1]
 ```
