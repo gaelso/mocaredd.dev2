@@ -73,6 +73,8 @@ fct_cstock_formula <- function(.carbon){
 
   } ## END IF AGB in names
 
+  other_pools <- c("DW", "SOC", "LI")
+
   if (any(c("DW", "SOC", "LI") %in% names(c_wide))) {
 
     c_wide <- c_wide |>
