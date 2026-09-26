@@ -75,7 +75,7 @@ fct_cstock_formula <- function(.carbon){
 
   other_pools <- c("DW", "SOC", "LI")
 
-  if (any(c("DW", "SOC", "LI") %in% names(c_wide))) {
+  if (any(other_pool %in% names(c_wide))) {
 
     c_wide <- c_wide |>
       dplyr::mutate(
