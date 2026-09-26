@@ -2,7 +2,7 @@
 
 # devtools::load_all()
 
-path <- "tests/mocaredd-CUA-S3-V2_d2-details.xlsx"
+path <- "tests/mocaredd-CUA-S4-V2_d2-details.xlsx"
 
 rv <- list(checks = list(), inputs = list(), sims = list(), res = list())
 
@@ -13,24 +13,15 @@ rv$checks$all_ok <- isTRUE(check_result$all_ok)
 rv$checked <- check_result       # full fct_checkinput() output (incl. template_version)
 rv$inputs  <- check_result$data  # tables, for value boxes and period/ER aggregation
 
+## FOR TESTS
+.setup  <- rv$inputs$setup
+.time   <- rv$inputs$time
+.carbon <- rv$inputs$carbon
+.area   <- rv$inputs$area
+
 rv$checks$ari_res <- fct_arithmetic_mean2(.checked_data = rv$checked)
 
-  ## Update sidebar MCS accordion
-  shinyjs::hide("msg_no_check")
-  shinyjs::show("msg_checks_ok")
-  shinyjs::hide("msg_checks_wrong")
-  shinyjs::enable("btn_run_mcs")
 
-} else {
-
-  shinyjs::hide("msg_no_check")
-  shinyjs::hide("msg_checks_ok")
-  shinyjs::show("msg_checks_wrong")
-  shinyjs::disable("btn_run_mcs")
-
-}
-
-}) ## END observeEvent btn_run_checks
 
 
 ## 1.4 Show check results ==================================================
