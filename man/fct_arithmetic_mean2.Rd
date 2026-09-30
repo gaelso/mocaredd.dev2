@@ -16,7 +16,8 @@ and \code{carbon} tables.}
 A list with elements \code{ER} (reference / monitoring levels and emission
 reductions with mean, se, U\\% and confidence bounds), \code{emissions}
 (per time period, with uncertainty), \code{gg_emissions} (figure with
-confidence intervals) and \code{emissions_table} (a tidy tibble ready to
+confidence intervals, ER as areas with their confidence interval) and
+\code{emissions_table} (a tidy tibble ready to
 be turned into a gt table by the app).
 }
 \description{

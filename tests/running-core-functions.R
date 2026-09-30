@@ -3,6 +3,8 @@
 # devtools::load_all()
 
 path <- "tests/mocaredd-CUA-S4-V2_d2-details.xlsx"
+path <- "inst/extdata/mocaredd-templatev2-4pools.xlsx"
+path <- "inst/extdata/mocaredd-templatev2-4pools-DM.xlsx"
 
 rv <- list(checks = list(), inputs = list(), sims = list(), res = list())
 
@@ -14,6 +16,7 @@ rv$checked <- check_result       # full fct_checkinput() output (incl. template_
 rv$inputs  <- check_result$data  # tables, for value boxes and period/ER aggregation
 
 ## FOR TESTS
+.checked_data <- rv$checked
 .setup  <- rv$inputs$setup
 .time   <- rv$inputs$time
 .carbon <- rv$inputs$carbon
@@ -22,7 +25,51 @@ rv$inputs  <- check_result$data  # tables, for value boxes and period/ER aggrega
 rv$checks$ari_res <- fct_arithmetic_mean2(.checked_data = rv$checked)
 
 
+## TEST GRAPHS ARITHMETIC MEAN ######
 
+## Run internal of fct_arithmetic_mean2()
+er_blocks <- out_yearly_mon |>
+  dplyr::summarise(
+    xmin     = min(.data$year) - 0.5,
+    xmax     = max(.data$year) + 0.5,
+    nb_years = dplyr::n(),
+    E        = dplyr::first(.data$E),
+    FREL     = dplyr::first(.data$FREL),
+    .by = c("period_type")
+  ) |>
+  dplyr::left_join(er_stat, by = "period_type") |>
+  dplyr::mutate(ER_tot = .data$ER_y * .data$nb_years)
+
+out_gg <- out_yearly |>
+  ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
+  ## 1. emission reductions as a volume --------------------------------------
+ggplot2::geom_rect(
+  data = er_blocks, inherit.aes = FALSE,
+  ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$E, ymax = .data$FREL),
+  fill = "limegreen", alpha = 0.3
+) +
+  ggplot2::geom_text(
+    data = er_blocks, inherit.aes = FALSE,
+    ggplot2::aes(x = (.data$xmin + .data$xmax) / 2, y = (.data$E + .data$FREL) / 2,
+                 label = paste0(round(.data$ER_tot, 2), "\nMtCO2e")),
+    colour = "darkgreen", fontface = "bold", size = 5, lineheight = 0.9
+  ) +
+  ## 2. FREL -----------------------------------------------------------------
+ggplot2::geom_line(ggplot2::aes(y = .data$FREL), col = "deeppink3", linewidth = 1) +
+  ## 3. emissions ------------------------------------------------------------
+ggplot2::geom_linerange(
+  ggplot2::aes(ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
+  linewidth = 0.8
+) +
+  ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 4) +
+  ## 4. scales and theme -----------------------------------------------------
+ggplot2::scale_colour_discrete(na.value = "gray50") +
+  ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
+  ggplot2::coord_cartesian(ylim = c(0, NA)) +
+  ggplot2::theme_bw(base_size = 20) +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                 legend.position = "bottom") +
+  ggplot2::labs(x = "Years", y = "Emissions (MtCO2e/y)", color = "")
 
 ## 1.4 Show check results ==================================================
 ## Hide progress div; reveal value boxes + arithmetic mean only when all_ok.
