@@ -21,7 +21,7 @@ with the IPCC Approach 1 rules (IPCC 2006, Vol. 1, Ch. 3, Eq. 3.1 and
 ## Usage
 
 ``` r
-fct_make_formula_U(.c_el, .c_unit, .version = 1)
+fct_make_formula_U(.c_el, .c_unit, .version = 2)
 ```
 
 ## Arguments
@@ -49,8 +49,8 @@ A character value with the standard error formula of the carbon stock.
 ## Examples
 
 ``` r
-fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = "DM")
-#> Error in names(object) <- nm: 'names' attribute [2] must be the same length as the vector [1]
+fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = c("DM", "ratio"))
+#> [1] "AGB * (1 + RS) * CF * sqrt((AGB_se / AGB)^2 + (RS_se / (1 + RS))^2 + (CF_se / CF)^2)"
 #> "AGB * (1 + RS) * CF * sqrt((AGB_se / AGB)^2 + (RS_se / (1 + RS))^2 + (CF_se / CF)^2)"
 
 fct_make_formula_U(.c_el = c("AGB", "RS", "DW"), .c_unit = c("DM", NA, "C"), .version = 2)

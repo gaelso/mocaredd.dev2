@@ -21,6 +21,8 @@
   emission reductions
 - [`fct_combine_mcs_P()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_P.md)
   : Combine MCS of emissions to a defined time period
+- [`fct_cstock_formula2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_cstock_formula2.md)
+  : Carbon stock formulas and IPCC Approach 1 uncertainty per land use
 - [`fct_forestplot()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_forestplot.md)
   : Make a forest plot to show Monte Carlo simulation results
 - [`fct_histogram()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_histogram.md)
