@@ -335,6 +335,22 @@ fct_arithmetic_mean2 <- function(.checked_data){
     stats::setNames(rep_len(col_mon, length(mon_types)), mon_types)
   )
 
+  ## One mark per period: band for multi-year non-MON periods, point + error bar otherwise
+  out_mark <- period_meta |>
+    dplyr::mutate(
+      s       = purrr::map(.data$period_no, \(p) stat_of(paste0("PN.", p))),
+      E       = purrr::map_dbl(.data$s, "mean")  / 1e6,
+      E_lower = purrr::map_dbl(.data$s, "lower") / 1e6,
+      E_upper = purrr::map_dbl(.data$s, "upper") / 1e6,
+      xmin    = .data$year_start - 0.5,
+      xmax    = .data$year_end + 0.5,
+      x_mid   = (.data$year_start + .data$year_end) / 2,
+      is_band = .data$year_end > .data$year_start & !(.data$period_type %in% mon_types)
+    ) |>
+    dplyr::select(-"s")
+  out_band  <- dplyr::filter(out_mark, .data$is_band)
+  out_point <- dplyr::filter(out_mark, !.data$is_band)
+
   out_gg <- out_yearly |>
     ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
     ## ER uncertainty: light area over the ER confidence interval
@@ -360,10 +376,31 @@ fct_arithmetic_mean2 <- function(.checked_data){
       ggplot2::aes(x = .data$xmin, xend = .data$xmax, y = .data$y_upper, yend = .data$y_upper),
       colour = col_er_dots, linewidth = 0.6, linetype = "dotted"
     ) +
-    ggplot2::geom_line(ggplot2::aes(y = .data$FREL), colour = col_ref, linewidth = 1) +
-    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 4) +
+    ## Multi-year non-MON periods: CI band and mean line
+    ggplot2::geom_rect(
+      data = out_band, inherit.aes = FALSE,
+      ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$E_lower, ymax = .data$E_upper,
+                   fill = .data$period_type),
+      alpha = 0.2
+    ) +
+    ggplot2::geom_segment(
+      data = out_band, inherit.aes = FALSE,
+      ggplot2::aes(x = .data$xmin, xend = .data$xmax, y = .data$E, yend = .data$E, colour = .data$period_type),
+      linewidth = 1.2
+    ) +
+    ## FREL across the full extent of the periods
+    ggplot2::annotate(
+      "segment", x = min(out_mark$xmin), xend = max(out_mark$xmax), y = FREL, yend = FREL,
+      colour = col_ref, linewidth = 1
+    ) +
+    ## Other periods: point + error bar at period centre
+    ggplot2::geom_point(
+      data = out_point, inherit.aes = FALSE,
+      ggplot2::aes(x = .data$x_mid, y = .data$E, colour = .data$period_type), size = 4
+    ) +
     ggplot2::geom_errorbar(
-      ggplot2::aes(ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
+      data = out_point, inherit.aes = FALSE,
+      ggplot2::aes(x = .data$x_mid, ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
       width = 0.2, linewidth = 0.8
     ) +
     ## ER volume label
@@ -372,7 +409,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
     #   ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
     #   vjust = -0.15, colour = col_er, fontface = "bold", size = 4, label.size = 0
     # ) +
-    ggplot2::scale_colour_manual(values = pal, na.value = "gray50") +
+    ggplot2::scale_colour_manual(values = pal, na.value = "gray50", aesthetics = c("colour", "fill")) +
     ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.15))) +
     ggplot2::expand_limits(y = 0) +
@@ -381,7 +418,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
                    legend.position = "bottom",
                    plot.caption = ggplot2::element_text(size = ggplot2::rel(0.7 * 0.8))) +
     ggplot2::labs(
-      x = "Years", y = "Emissions (MtCO2e/y)", colour = "",
+      x = "Years", y = "Emissions (MtCO2e/y)", colour = "", fill = "",
       caption = "light bar and dotted segments: \nconfidence interval of the emission reductions"
         )
 
