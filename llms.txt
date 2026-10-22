@@ -43,6 +43,11 @@ Development and test version of openforis/mocaredd
   : Generate Monte Carlo Simulations for a given PDF
 - [`fct_round()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_round.md)
   : Reproduce round function from MS Excel
+- [`fct_sensitivity2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_sensitivity2.md)
+  : Sensitivity analysis of REDD+ emissions and emission reductions
+  (delta method)
+- [`fct_tornado()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_tornado.md)
+  : Tornado chart of activity data sources
 - [`shiny_run_mocaredd_dev2()`](https://gaelso.github.io/mocaredd.dev2/reference/shiny_run_mocaredd_dev2.md)
   : Run Monte Carlo for REDD+ uncertainty's shiny app
 

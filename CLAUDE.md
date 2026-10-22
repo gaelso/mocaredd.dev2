@@ -138,10 +138,17 @@ perturb the source inputs, not transition-level EFs.
 
 Two tracks:
 
-- `fct_sensitivity2()` (package): delta-method first-order contributions
-  grouped by input type, plus DF/DG emissions split. Exported,
-  documented in `vignettes/sensitivity-analysis.Rmd`. Not yet called
-  from `mod_tool_server2` — wiring it into the Tool tab is an open task.
+- [`fct_sensitivity2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_sensitivity2.md)
+  (package, wired in the Tool tab, sidebar accordion 3 → Sensitivity
+  tab): delta method on input means/se, same model as the MC chain
+  (shared carbon elements, EF = C_i − C_f, `fct_combine_mcs_P` weights).
+  Returns `outputs` (mean, se, U), `variance` (shares by `input_type`
+  AD/EF and group), `ad_tornado` (per output × AD source, exact since
+  outputs are linear in AD), `split`, `gg_variance`.
+  [`fct_tornado()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_tornado.md)
+  plots one output. No simulations needed; se ≈ 0.97–0.99 × MC sd on
+  simple/UGA (AD×EF interaction omitted). Tests in
+  `tests/testthat/test-fct_sensitivity2.R`. No vignette yet.
 - `tests/sensitivity/sensitivity.R` (standalone, not a testthat test):
   runs the simulator once on the UGA template, then (A) grouped Shapley
   of `Var(ERR)` over five groups and (B) a tornado of every AD source.
@@ -233,8 +240,9 @@ first-order Sobol’ = SensIt “Percent Swing²”; this breaks for EF/carbon
   [`fct_combine_mcs_P()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_P.md)
   (which weights by years, and multiplies by `nb_years` when
   `ad_annual`) before using multi-year periods.
-- Compare Part A with `fct_sensitivity2()` on the same workbook before
-  integrating either into the app.
+- Compare Part A with
+  [`fct_sensitivity2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_sensitivity2.md)
+  on the same workbook before integrating either into the app.
 - `sensitivity` package versions: check `shapleyPermEx` /
   `sobolshap_knn` argument names.
 
@@ -272,3 +280,14 @@ Owen (2014) *SIAM/ASA JUQ* 2:245–251 · Iooss & Prieur (2019) *IJUQ*
   for unsupported PDFs (returns an error on undefined `SIMS`). Output
   rounded to 3 decimals.
 - `README.md` is a stub.
+- [`fct_combine_mcs_E()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_E.md)
+  step 5: with `ad_annual = TRUE`, `E` is overwritten before
+  `E_year = .data$E`, so `E_year` is `period_length`× too large for
+  multi-year periods (4pools template: MC REF ≈ 49.4 M vs 4.93 M
+  arithmetic). Fix pending approval (changes results).
+- [`fct_combine_mcs_E()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_E.md)
+  partial DG (`dg_pool != "ALL"`): `c_intact_noDG` sums raw excluded
+  elements (no CF, RS not tied to AGB), unlike
+  [`fct_arithmetic_mean3()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_arithmetic_mean3.md).
+  [`fct_sensitivity2()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_sensitivity2.md)
+  mirrors the MC version.

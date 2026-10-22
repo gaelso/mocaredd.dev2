@@ -1,20 +1,26 @@
-# Sensitivity analysis of REDD+ emissions and emission reductions
+# Sensitivity analysis of REDD+ emissions and emission reductions (delta method)
 
-Global sensitivity analysis of the emission / emission reduction
-estimates with respect to the model inputs, using the same inputs as the
-simulation. The variance of each output is decomposed into first-order
-contributions of the independent inputs (activity data, carbon stocks,
-carbon fraction, degradation ratios) with the delta method: for
-independent inputs and a first-order expansion, \\Var(Y) \approx \sum_i
-(\partial Y / \partial X_i)^2 \sigma_i^2\\, and the normalised
-contribution \\(\partial Y / \partial X_i \cdot \sigma_i)^2 / Var(Y)\\
-is the first-order Sobol index of input \\i\\. Contributions are summed
-within REDD+ input groups. Emissions are additionally split between
-deforestation (DF) and degradation (DG) when both are reported, each
-with its own uncertainty.
+Sensitivity of the reference level, monitoring emissions and emission
+reductions to the independent model inputs (activity data, carbon
+elements, carbon fraction, degradation ratios), with the same model as
+the Monte Carlo chain
+([`fct_combine_mcs_E()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_E.md),
+[`fct_combine_mcs_P()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_P.md),
+[`fct_combine_mcs_ER()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_combine_mcs_ER.md)):
+carbon elements are shared by all transitions of a land use, and EF =
+C_i - C_f.
 
-See the "Sensitivity analysis" vignette for the rationale and the
-relationship with variance-based (Sobol) sensitivity analysis.
+Delta method: for independent inputs and a first-order expansion,
+\\Var(Y) \approx \sum_i (\partial Y / \partial X_i)^2 \sigma_i^2\\. The
+share \\(\partial Y / \partial X_i \cdot \sigma_i)^2 / Var(Y)\\ is the
+first-order Sobol index of input \\i\\. Shares are summed by input
+group, and by input type: activity data (AD) vs emission factors (EF:
+carbon stocks, carbon fraction, degradation ratios). The AD x EF
+interaction is second order and not included.
+
+The AD tornado swings each AD source across \\mean \pm z \cdot se\\, all
+other inputs at their mean. Outputs are linear in each AD, so the swing
+is exact and the AD shares add up to the AD group share.
 
 ## Usage
 
@@ -31,17 +37,17 @@ fct_sensitivity2(.checked_data)
 
 ## Value
 
-A list with `variance` (first-order variance contributions of each input
-group to each output, in \\ REDD+ activity with uncertainty),
-`gg_variance` (contribution bar chart) and `gg_split` (DF vs DG
-emissions bar chart).
+A list with: `outputs` (mean, delta-method se and U\\ `variance` (share
+of variance per output, input type and group, in \\ `ad_tornado` (one
+row per output and AD source: low / high output value, swing and share
+of variance, sorted by swing), `split` (emissions per period type and
+REDD+ activity, with uncertainty) and `gg_variance` (stacked bar chart
+of the variance shares). Outputs are named as in the app: reference type
+(e.g. "REF"), "E-" and "ER-".
 
 ## Examples
 
 ``` r
-library(mocaredd)
-#> Error in library(mocaredd): there is no package called ‘mocaredd’
-
 path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd.dev2")
 checked <- fct_checkinput(.path = path)
 #> Loading data... - progress: 0%.
@@ -62,19 +68,21 @@ checked <- fct_checkinput(.path = path)
 
 sa <- fct_sensitivity2(.checked_data = checked)
 sa$variance
-#> # A tibble: 12 × 3
-#>    output  group             contribution_pct
-#>    <chr>   <chr>                        <dbl>
-#>  1 REF     Carbon stock                  43.3
-#>  2 REF     Degradation ratio             48.9
-#>  3 REF     Activity data                  7.2
-#>  4 REF     Carbon fraction                0.6
-#>  5 E-MON1  Carbon stock                  38.2
-#>  6 E-MON1  Degradation ratio             56.3
-#>  7 E-MON1  Activity data                  4.8
-#>  8 E-MON1  Carbon fraction                0.7
-#>  9 ER-MON1 Carbon stock                  42.3
-#> 10 ER-MON1 Degradation ratio             40.8
-#> 11 ER-MON1 Activity data                 16.4
-#> 12 ER-MON1 Carbon fraction                0.5
+#> # A tibble: 12 × 4
+#>    output  input_type group             contribution_pct
+#>    <chr>   <chr>      <chr>                        <dbl>
+#>  1 REF     EF         Carbon stock                43.3  
+#>  2 REF     EF         Degradation ratio           48.9  
+#>  3 REF     AD         Activity data                7.20 
+#>  4 REF     EF         Carbon fraction              0.624
+#>  5 E-MON1  EF         Carbon stock                38.2  
+#>  6 E-MON1  EF         Degradation ratio           56.3  
+#>  7 E-MON1  AD         Activity data                4.84 
+#>  8 E-MON1  EF         Carbon fraction              0.682
+#>  9 ER-MON1 EF         Carbon stock                42.3  
+#> 10 ER-MON1 EF         Degradation ratio           40.8  
+#> 11 ER-MON1 AD         Activity data               16.4  
+#> 12 ER-MON1 EF         Carbon fraction              0.536
+fct_tornado(sa$ad_tornado, .output = "ER-MON1")
+
 ```
