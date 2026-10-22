@@ -16,6 +16,76 @@
       "en": "I am module 2",
       "fr": "Je suis le module 2",
       "sp": "Soy el modulo 2"
+    },
+    {
+      "en": "Run checks first.",
+      "fr": "Lancez d'abord les vérifications.",
+      "sp": "Ejecute primero las verificaciones."
+    },
+    {
+      "en": "Uses the means and standard errors of the inputs, no simulations needed.",
+      "fr": "Utilise les moyennes et erreurs standard des données, sans simulations.",
+      "sp": "Usa las medias y errores estándar de los datos, sin simulaciones."
+    },
+    {
+      "en": "Run sensitivity analysis",
+      "fr": "Lancer l'analyse de sensibilité",
+      "sp": "Ejecutar el análisis de sensibilidad"
+    },
+    {
+      "en": " Run the sensitivity analysis in the sidebar.",
+      "fr": " Lancez l'analyse de sensibilité dans le panneau latéral.",
+      "sp": " Ejecute el análisis de sensibilidad en el panel lateral."
+    },
+    {
+      "en": "Contribution to uncertainty: activity data vs emission factors",
+      "fr": "Contribution à l'incertitude : données d'activité vs facteurs d'émission",
+      "sp": "Contribución a la incertidumbre: datos de actividad vs factores de emisión"
+    },
+    {
+      "en": "Share of the variance of each result explained by each input group (delta method, first-order).",
+      "fr": "Part de la variance de chaque résultat expliquée par chaque groupe de données (méthode delta, premier ordre).",
+      "sp": "Parte de la varianza de cada resultado explicada por cada grupo de datos (método delta, primer orden)."
+    },
+    {
+      "en": "Activity data sources",
+      "fr": "Sources de données d'activité",
+      "sp": "Fuentes de datos de actividad"
+    },
+    {
+      "en": "Result when one activity data source goes from its lower to its upper confidence bound, all other inputs at their mean.",
+      "fr": "Résultat quand une source de données d'activité passe de sa borne inférieure à sa borne supérieure de confiance, les autres données à leur moyenne.",
+      "sp": "Resultado cuando una fuente de datos de actividad pasa de su límite inferior a su límite superior de confianza, los demás datos en su media."
+    },
+    {
+      "en": "Select a result",
+      "fr": "Choisir un résultat",
+      "sp": "Seleccione un resultado"
+    },
+    {
+      "en": "Number of sources",
+      "fr": "Nombre de sources",
+      "sp": "Número de fuentes"
+    },
+    {
+      "en": "Download the sensitivity results",
+      "fr": "Télécharger les résultats de sensibilité",
+      "sp": "Descargar los resultados de sensibilidad"
+    },
+    {
+      "en": "Variance shares by input group",
+      "fr": "Parts de variance par groupe de données",
+      "sp": "Partes de varianza por grupo de datos"
+    },
+    {
+      "en": "Land use transition details",
+      "fr": "Détails par transition d'utilisation des terres",
+      "sp": "Detalles por transición de uso de la tierra"
+    },
+    {
+      "en": "Run simulations to see the details per land use transition.",
+      "fr": "Lancez les simulations pour voir les détails par transition d'utilisation des terres.",
+      "sp": "Ejecute las simulaciones para ver los detalles por transición de uso de la tierra."
     }
    ]
 }

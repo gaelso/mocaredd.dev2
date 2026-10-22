@@ -126,7 +126,26 @@ mod_tool_UI2 <- function(id, i18n){
     title = i18n$t("Perform sensitivity analysis"),
     icon  = bsicons::bs_icon("3-circle"),
     value = ns("ac_sens"),
-    h4("coming soon")
+
+    div(
+      id    = ns("msg_sens_no_check"),
+      i18n$t("Run checks first."),
+      class = "text-warning",
+      style = "font-style: italic;"
+    ),
+    shinyjs::hidden(div(
+      id    = ns("msg_sens_ready"),
+      i18n$t("Uses the means and standard errors of the inputs, no simulations needed."),
+      class = "text-success",
+      style = "font-style: italic;"
+    )),
+
+    div(
+      shinyjs::disabled(
+        actionButton(inputId = ns("btn_run_sens"), label = i18n$t("Run sensitivity analysis"))
+      ),
+      style = "margin-top: 1rem;"
+    )
   )
 
 
@@ -346,8 +365,72 @@ mod_tool_UI2 <- function(id, i18n){
 
 
   ## + Sensitivity panel =======================================================
-  div_trans_forestplot <- div(
-    id = ns("trans_forestplot"),
+  div_sens_init <- div(
+    id    = ns("sens_init"),
+    bsicons::bs_icon("gear"), i18n$t(" Run the sensitivity analysis in the sidebar."),
+    class = "text-warning",
+    style = "font-style: italic;"
+  )
+
+  ## ++ Sens cards -------------------------------------------------------------
+  card_sens_var <- card(
+    full_screen = TRUE,
+    h5(i18n$t("Contribution to uncertainty: activity data vs emission factors")),
+    p(
+      i18n$t("Share of the variance of each result explained by each input group (delta method, first-order)."),
+      class = "text-muted small"
+    ),
+    plotOutput(ns("sens_var_gg"))
+  )
+
+  card_sens_tornado <- card(
+    full_screen = TRUE,
+    h5(i18n$t("Activity data sources")),
+    p(
+      i18n$t("Result when one activity data source goes from its lower to its upper confidence bound, all other inputs at their mean."),
+      class = "text-muted small"
+    ),
+    layout_column_wrap(
+      width = "200px", fixed_width = TRUE,
+      selectInput(inputId = ns("sens_select_output"), label = i18n$t("Select a result"), choices = NULL),
+      numericInput(inputId = ns("sens_top_n"), label = i18n$t("Number of sources"), value = 20, min = 5, max = 200, step = 5)
+    ),
+    plotOutput(ns("sens_tornado_gg"), height = "auto")
+  )
+
+  card_sens_dl <- card(
+    card_body(
+      fillable = FALSE,
+      h5(i18n$t("Download the sensitivity results")),
+      downloadButton(
+        outputId = ns("dl_sens_var"),
+        label    = i18n$t("Variance shares by input group"),
+        class    = "btn-outline-secondary btn-small form-group"
+      ),
+      downloadButton(
+        outputId = ns("dl_sens_ad"),
+        label    = i18n$t("Activity data sources"),
+        class    = "btn-outline-secondary btn-small form-group"
+      )
+    )
+  )
+
+  div_sens_cards <- shinyjs::hidden(div(
+    id = ns("sens_cards"),
+    card_sens_dl,
+    layout_columns(col_widths = c(5, 7), card_sens_var, card_sens_tornado)
+  ))
+
+  ## ++ Transition details (from the simulations) ------------------------------
+  card_sens_trans <- card(
+    full_screen = TRUE,
+    h5(i18n$t("Land use transition details")),
+    div(
+      id    = ns("sens_trans_init"),
+      i18n$t("Run simulations to see the details per land use transition."),
+      class = "text-warning",
+      style = "font-style: italic;"
+    ),
     gt::gt_output(ns("sens_trans_fp"))
   )
 
@@ -402,7 +485,9 @@ mod_tool_UI2 <- function(id, i18n){
         title = i18n$t("Sensitivity"),
         value = "sensi_tab",
         icon  = icon("magnifying-glass"),
-        div_trans_forestplot
+        div_sens_init,
+        div_sens_cards,
+        card_sens_trans
       )
 
     ) ## END navset_card_tab()

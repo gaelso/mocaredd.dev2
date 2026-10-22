@@ -60,3 +60,7 @@ rsconnect/
 /.quarto/
 **/*.quarto_ipynb
 .positai
+
+docs
+inst/doc
+.vscode/

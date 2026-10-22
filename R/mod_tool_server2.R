@@ -105,6 +105,9 @@ mod_tool_server2 <- function(id, rv) {
       ## Reset downstream state
       rv$checks$all_ok  <- NULL
       rv$checks$ari_res <- NULL
+      rv$sens           <- NULL
+      shinyjs::show("sens_init")
+      shinyjs::hide("sens_cards")
 
       ## 1.3.2 Check and read tables ------
       ## Run fct_checkinput(): each message() call is appended to the console
@@ -155,12 +158,21 @@ mod_tool_server2 <- function(id, rv) {
         shinyjs::hide("msg_checks_wrong")
         shinyjs::enable("btn_run_mcs")
 
+        ## Update sidebar sensitivity accordion
+        shinyjs::hide("msg_sens_no_check")
+        shinyjs::show("msg_sens_ready")
+        shinyjs::enable("btn_run_sens")
+
       } else {
 
         shinyjs::hide("msg_no_check")
         shinyjs::hide("msg_checks_ok")
         shinyjs::show("msg_checks_wrong")
         shinyjs::disable("btn_run_mcs")
+
+        shinyjs::show("msg_sens_no_check")
+        shinyjs::hide("msg_sens_ready")
+        shinyjs::disable("btn_run_sens")
 
       }
 
@@ -636,6 +648,70 @@ mod_tool_server2 <- function(id, rv) {
     ##
     ## 5. SENSITIVITY ##########################################################
     ##
+
+    ## 5.1 Run delta method ====================================================
+    observeEvent(input$btn_run_sens, {
+
+      session$sendCustomMessage("activate-tab", list(id = ns("tool_tabs"), value = "sensi_tab"))
+
+      rv$sens <- tryCatch(
+        fct_sensitivity2(.checked_data = rv$checked),
+        error = function(e) {
+          showNotification(paste0("Sensitivity analysis failed: ", conditionMessage(e)), type = "error", duration = NULL)
+          NULL
+        }
+      )
+      req(rv$sens)
+
+      ## Default result: first emission reduction, else first output
+      outs <- rv$sens$outputs$output
+      sel  <- c(grep("^ER-", outs, value = TRUE), outs)[1]
+      updateSelectInput(session, "sens_select_output", choices = outs, selected = sel)
+
+      shinyjs::hide("sens_init")
+      shinyjs::show("sens_cards")
+
+    })
+
+    ## 5.2 Variance shares =====================================================
+    output$sens_var_gg <- renderPlot({
+      req(rv$sens)
+      rv$sens$gg_variance
+    })
+
+    ## 5.3 AD tornado ==========================================================
+    ## Height follows the number of bars shown
+    sens_tornado_height <- function() {
+      if (is.null(rv$sens) || !isTruthy(input$sens_select_output)) return(400)
+      n_out <- sum(rv$sens$ad_tornado$output == input$sens_select_output)
+      n     <- min(dplyr::coalesce(input$sens_top_n, 20), n_out)
+      150 + 28 * n
+    }
+
+    output$sens_tornado_gg <- renderPlot({
+      req(rv$sens, input$sens_select_output, input$sens_top_n)
+      fct_tornado(
+        .ad_tornado = rv$sens$ad_tornado,
+        .output     = input$sens_select_output,
+        .top_n      = input$sens_top_n
+      )
+    }, height = sens_tornado_height)
+
+    ## 5.4 Downloads ===========================================================
+    output$dl_sens_var <- downloadHandler(
+      filename = function() { "mocaredd - sensitivity - variance shares.csv" },
+      content  = function(file) { utils::write.csv(rv$sens$variance, file, row.names = FALSE) }
+    )
+
+    output$dl_sens_ad <- downloadHandler(
+      filename = function() { "mocaredd - sensitivity - activity data sources.csv" },
+      content  = function(file) { utils::write.csv(rv$sens$ad_tornado, file, row.names = FALSE) }
+    )
+
+    ## 5.5 Transition details (from the simulations) ===========================
+    observe({
+      shinyjs::toggle("sens_trans_init", condition = is.null(rv$mcs$fp_trans))
+    })
 
     output$sens_trans_fp <- gt::render_gt({
       req(rv$mcs$fp_trans)

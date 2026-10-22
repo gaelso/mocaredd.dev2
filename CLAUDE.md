@@ -69,7 +69,7 @@ Carbon elements (and CF) are drawn once per iteration per land-use class and reu
 
 Two tracks:
 
-- `fct_sensitivity2()` (package): delta-method first-order contributions grouped by input type, plus DF/DG emissions split. Exported, documented in `vignettes/sensitivity-analysis.Rmd`. Not yet called from `mod_tool_server2` — wiring it into the Tool tab is an open task.
+- `fct_sensitivity2()` (package, wired in the Tool tab, sidebar accordion 3 → Sensitivity tab): delta method on input means/se, same model as the MC chain (shared carbon elements, EF = C_i − C_f, `fct_combine_mcs_P` weights). Returns `outputs` (mean, se, U), `variance` (shares by `input_type` AD/EF and group), `ad_tornado` (per output × AD source, exact since outputs are linear in AD), `split`, `gg_variance`. `fct_tornado()` plots one output. No simulations needed; se ≈ 0.97–0.99 × MC sd on simple/UGA (AD×EF interaction omitted). Tests in `tests/testthat/test-fct_sensitivity2.R`. No vignette yet.
 - `tests/sensitivity/sensitivity.R` (standalone, not a testthat test): runs the simulator once on the UGA template, then (A) grouped Shapley of `Var(ERR)` over five groups and (B) a tornado of every AD source. Supersedes the earlier `tests/test-sensitivity*.R`, `sensitivity_analysis.R`, `tornado_ad.R` and the out-of-repo `mocaredd_sensitivity_analysis.R` / `mocaredd_sensit_tornado_AD.R` scripts.
 
 ### Running the script
@@ -142,3 +142,5 @@ References: Song, Nelson & Staum (2016) *SIAM/ASA JUQ* 4:1060–1083 · Owen (20
 - App footer is placeholder text ("MyApp", "Your Name", "XYZ Institute").
 - `fct_make_mcs()`: "beta" uses `.params` only and ignores `.mean`/`.se`; no else branch for unsupported PDFs (returns an error on undefined `SIMS`). Output rounded to 3 decimals.
 - `README.md` is a stub.
+- `fct_combine_mcs_E()` step 5: with `ad_annual = TRUE`, `E` is overwritten before `E_year = .data$E`, so `E_year` is `period_length`× too large for multi-year periods (4pools template: MC REF ≈ 49.4 M vs 4.93 M arithmetic). Fix pending approval (changes results).
+- `fct_combine_mcs_E()` partial DG (`dg_pool != "ALL"`): `c_intact_noDG` sums raw excluded elements (no CF, RS not tied to AGB), unlike `fct_arithmetic_mean3()`. `fct_sensitivity2()` mirrors the MC version.
