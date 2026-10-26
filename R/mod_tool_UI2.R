@@ -8,7 +8,7 @@
 #'   displayed in the console div rather than a separate gt table.
 #'
 #' @noRd
-mod_tool_UI2 <- function(id, i18n){
+mod_tool_UI2 <- function(id, i18n, .tr){
 
   ns <- NS(id)
 
@@ -21,28 +21,27 @@ mod_tool_UI2 <- function(id, i18n){
 
   ## ++ Accordion 1: load data -------------------------------------------------
   ac_load <- accordion_panel(
-    title = i18n$t("Upload your data"),
+    title = i18n$t(.tr$ac1_title),
     icon  = bsicons::bs_icon("1-circle"),
     value = ns("ac_load"),
 
     div(
-      p("{mocaredd} only accepts XLSX files that follow a specific template.
-        Download the template here if you haven't converted your data yet."),
+      p(i18n$t(.tr$ac1_p1)),
       downloadButton(
         outputId = ns("dl_template_v2_simple"),
-        label    = "v2 simple",
-        class    = "btn-outline-secondary btn-small form-group"
+        label    = i18n$t(.tr$ac1_dl_v2_simple),
+        class    = "btn-primary btn-sm form-group"
       ),
       downloadButton(
         outputId = ns("dl_template_v2_inter"),
-        label    = "v2 intermediate",
-        class    = "btn-outline-secondary btn-small form-group"
+        label    = i18n$t(.tr$ac1_dl_v2_inter),
+        class    = "btn-primary btn-sm form-group"
       ),
       div(
         downloadButton(
           outputId = ns("dl_template_v1_simple"),
-          label    = "(legacy) v1 simple",
-          class    = "btn-outline-secondary btn-small form-group"
+          label    = i18n$t(.tr$ac1_dl_v1),
+          class    = "btn-primary btn-sm form-group"
         ),
         style = "color: grey;"
       ),
@@ -50,37 +49,40 @@ mod_tool_UI2 <- function(id, i18n){
     ),
 
     div(
-      p("Once your data has been converted to the app's template, upload it here:"),
+      p(i18n$t(.tr$ac1_p2)),
       fileInput(
         inputId = ns("load_xlsx"),
         accept  = ".xlsx",
         label   = NULL
-      )
+      ) |>
+        ## FAO primary button for "Browse..." (fileInput() has no button class argument)
+        htmltools::tagQuery() |>
+        (\(x) x$find(".btn-file")$removeClass("btn-default")$addClass("btn-primary")$allTags())()
     ),
 
     ## Status messages
     div(
       id    = ns("msg_no_data"),
-      "No data uploaded.",
+      i18n$t(.tr$ac1_msg_nodata),
       class = "text-warning",
       style = "font-style: italic;"
     ),
     shinyjs::hidden(div(
       id    = ns("msg_data_tabs_ok"),
-      "Data uploaded with correct tabs.",
+      i18n$t(.tr$ac1_msg_ok),
       class = "text-success",
       style = "font-style: italic;"
     )),
     shinyjs::hidden(div(
       id    = ns("msg_data_tabs_wrong"),
-      "Data uploaded with incorrect tabs.",
+      i18n$t(.tr$ac1_msg_err),
       class = "text-danger",
       style = "font-style: italic;"
     )),
 
     div(
       shinyjs::disabled(
-        actionButton(inputId = ns("btn_run_checks"), label = "Run checks")
+        actionButton(inputId = ns("btn_run_checks"), label = i18n$t(.tr$ac1_btn), class = "btn-primary")
       ),
       style = "margin-top: 1rem;"
     )
@@ -89,32 +91,32 @@ mod_tool_UI2 <- function(id, i18n){
 
   ## ++ Accordion 2: Run MCS ---------------------------------------------------
   ac_mcs <- accordion_panel(
-    title = i18n$t("Create Monte Carlo Simulations"),
+    title = i18n$t(.tr$ac2_title),
     icon  = bsicons::bs_icon("2-circle"),
     value = ns("ac_mcs"),
 
     div(
       id    = ns("msg_no_check"),
-      "Run checks first.",
+      i18n$t(.tr$ac2_msg_nocheck),
       class = "text-warning",
       style = "font-style: italic;"
     ),
     shinyjs::hidden(div(
       id    = ns("msg_checks_ok"),
-      "All checks passed.",
+      i18n$t(.tr$ac2_msg_ok),
       class = "text-success",
       style = "font-style: italic;"
     )),
     shinyjs::hidden(div(
       id    = ns("msg_checks_wrong"),
-      "Checks not passed.",
+      i18n$t(.tr$ac2_msg_err),
       class = "text-danger",
       style = "font-style: italic;"
     )),
 
     div(
       shinyjs::disabled(
-        actionButton(inputId = ns("btn_run_mcs"), label = "Run simulations")
+        actionButton(inputId = ns("btn_run_mcs"), label = i18n$t(.tr$ac2_btn), class = "btn-primary")
       ),
       style = "margin-top: 1rem;"
     )
@@ -123,26 +125,26 @@ mod_tool_UI2 <- function(id, i18n){
 
   ## ++ Accordion 3: Sensitivity -----------------------------------------------
   ac_sens <- accordion_panel(
-    title = i18n$t("Perform sensitivity analysis"),
+    title = i18n$t(.tr$ac3_title),
     icon  = bsicons::bs_icon("3-circle"),
     value = ns("ac_sens"),
 
     div(
       id    = ns("msg_sens_no_check"),
-      i18n$t("Run checks first."),
+      i18n$t(.tr$ac3_msg_nocheck),
       class = "text-warning",
       style = "font-style: italic;"
     ),
     shinyjs::hidden(div(
       id    = ns("msg_sens_ready"),
-      i18n$t("Uses the means and standard errors of the inputs, no simulations needed."),
+      i18n$t(.tr$ac3_msg_ready),
       class = "text-success",
       style = "font-style: italic;"
     )),
 
     div(
       shinyjs::disabled(
-        actionButton(inputId = ns("btn_run_sens"), label = i18n$t("Run sensitivity analysis"))
+        actionButton(inputId = ns("btn_run_sens"), label = i18n$t(.tr$ac3_btn), class = "btn-primary")
       ),
       style = "margin-top: 1rem;"
     )
@@ -154,7 +156,7 @@ mod_tool_UI2 <- function(id, i18n){
   ## ++ Initial message --------------------------------------------------------
   div_check_init <- div(
     id    = ns("check_init_msg"),
-    bsicons::bs_icon("arrow-left"), " Start with uploading your data in the sidebar.",
+    bsicons::bs_icon("arrow-left"), i18n$t(.tr$check_msg_init),
     class = "text-warning",
     style = "font-style: italic;"
   )
@@ -168,36 +170,24 @@ mod_tool_UI2 <- function(id, i18n){
   div_check_progress <- shinyjs::hidden(div(
     id = ns("check_progress"),
 
-    h4("Checking data"),
+    h4(i18n$t(.tr$check_progress_title)),
 
     shinyWidgets::progressBar(
       id          = ns("prog_allchecks"),
       value       = 0,
-      title       = "Starting checks...",
+      title       = i18n$t(.tr$check_progress_start),
       display_pct = TRUE
     ),
 
     br(),
 
     ## Scrollable console output
-    div(
-      id    = ns("check_console"),
-      style = paste(
-        "height: 250px;",
-        "overflow-y: auto;",
-        "background-color: #f8f9fa;",
-        "font-family: monospace;",
-        "font-size: small;",
-        "padding: 0.5rem;",
-        "border-radius: 4px;",
-        "border: 1px solid #dee2e6;"
-      )
-    ),
+    div(id = ns("check_console"), class = "app-console"),
 
     br(),
 
     shinyjs::disabled(
-      actionButton(inputId = ns("btn_show_checks"), label = "Show check results")
+      actionButton(inputId = ns("btn_show_checks"), label = i18n$t(.tr$check_btn_show), class = "btn-primary")
     )
   ))
 
@@ -206,7 +196,7 @@ mod_tool_UI2 <- function(id, i18n){
 
   ## Value boxes
   vb_time <- value_box(
-    title    = "Time periods",
+    title    = i18n$t(.tr$vb_time_title),
     value    = htmlOutput(ns("vb_nb_time")),
     showcase = bsicons::bs_icon("calendar3", size = "40px"),
     theme    = "primary",
@@ -215,7 +205,7 @@ mod_tool_UI2 <- function(id, i18n){
   )
 
   vb_ad <- value_box(
-    title    = "Land use transitions",
+    title    = i18n$t(.tr$vb_ad_title),
     value    = htmlOutput(ns("vb_nb_trans")),
     showcase = bsicons::bs_icon("pin-map", size = "40px"),
     theme    = "secondary",
@@ -224,7 +214,7 @@ mod_tool_UI2 <- function(id, i18n){
   )
 
   vb_cs <- value_box(
-    title    = "Carbon stock",
+    title    = i18n$t(.tr$vb_cs_title),
     value    = htmlOutput(ns("vb_nb_pools")),
     showcase = bsicons::bs_icon("arrow-repeat", size = "48px"),
     theme    = "warning",
@@ -234,17 +224,17 @@ mod_tool_UI2 <- function(id, i18n){
 
   ## Check cards
   card_result_table <- card(
-    h5(i18n$t("Arithmetic mean emissions and reductions (tCO2e/yr)")),
+    card_header(i18n$t(.tr$check_card_table)),
     gt::gt_output(ns("check_result_table"))
   )
 
   card_arithmetic_gg <- card(
-    h5(i18n$t("Arithmetic mean emission reductions per period (tCO2e/y)")),
+    card_header(i18n$t(.tr$check_card_gg)),
     plotOutput(ns("check_arithmetic_gg"))
   )
 
   card_lumatrix <- card(
-    h5(i18n$t("Land use change matrix")),
+    card_header(i18n$t(.tr$check_card_lumatrix)),
     layout_column_wrap(
       width = "200px", fixed_width = TRUE,
       uiOutput(outputId = ns("check_select_period_UI")),
@@ -281,7 +271,7 @@ mod_tool_UI2 <- function(id, i18n){
 
   div_res_init <- div(
     id    = ns("res_init"),
-    bsicons::bs_icon("gear"), i18n$t(" Run simulations in the sidebar."),
+    bsicons::bs_icon("gear"), i18n$t(.tr$res_msg_init),
     class = "text-warning",
     style = "font-style: italic;"
   )
@@ -291,66 +281,66 @@ mod_tool_UI2 <- function(id, i18n){
     shinyWidgets::progressBar(
       id          = ns("prog_res"),
       value       = 0,
-      title       = "Simulations progress",
+      title       = i18n$t(.tr$res_progress_title),
       display_pct = TRUE
     )
   ))
 
   div_res_show <- shinyjs::hidden(div(
     id = ns("res_show"),
-    actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
+    actionButton(inputId = ns("btn_show_res"), label = i18n$t(.tr$res_btn_show), class = "btn-primary")
   ))
 
   ## ++ Res cards --------------------------------------------------------------
   card_res_dl <- card(
+    card_header(i18n$t(.tr$res_card_dl)),
     card_body(
       fillable = FALSE,
-      h5(i18n$t("Download the simulations and aggregated results")),
       downloadButton(
         outputId = ns("dl_ari"),
-        label    = "Download the arithmetic mean ERs",
-        class    = "btn-outline-secondary btn-small form-group"
+        label    = i18n$t(.tr$res_dl_ari),
+        class    = "btn-primary btn-sm form-group"
       ),
       downloadButton(
         outputId = ns("dl_res"),
-        label    = "Download the simulated ERs",
-        class    = "btn-outline-secondary btn-small form-group"
+        label    = i18n$t(.tr$res_dl_res),
+        class    = "btn-primary btn-sm form-group"
       ),
       downloadButton(
         outputId = ns("dl_sim_ER"),
-        label    = "Download all the ER simulations",
-        class    = "btn-outline-warning btn-small form-group"
+        label    = i18n$t(.tr$res_dl_sim_er),
+        class    = "btn-primary btn-sm form-group"
       ),
       downloadButton(
         outputId = ns("dl_sim_trans"),
-        label    = "Download all the land use transition simulations",
-        class    = "btn-outline-warning btn-small form-group"
+        label    = i18n$t(.tr$res_dl_sim_trans),
+        class    = "btn-primary btn-sm form-group"
       )
     )
   )
 
   card_res_fp <- card(
     full_screen = TRUE,
-    h5(i18n$t("Emission reductions details")),
+    card_header(i18n$t(.tr$res_card_er_fp)),
     gt::gt_output(ns("res_ER_fp"))
   )
 
   card_res_gg <- card(
     full_screen = TRUE,
-    h5(i18n$t("Emission reductions histogram")),
+    card_header(i18n$t(.tr$res_card_er_hist)),
     uiOutput(outputId = ns("res_select_ER_hist_UI")),
     plotOutput(ns("res_ER_hist"))
   )
 
   card_redd_fp <- card(
     full_screen = TRUE,
-    h5(i18n$t("REDD+ Activity details")),
+    card_header(i18n$t(.tr$res_card_redd_fp)),
     gt::gt_output(ns("res_redd_fp"))
   )
 
   card_redd_hist <- card(
     full_screen = TRUE,
-    h5(i18n$t("REDD+ activity histograms")),
+    card_header(i18n$t(.tr$res_card_redd_hist)),
     uiOutput(outputId = ns("res_select_redd_hist_UI")),
     uiOutput(outputId = ns("res_select_period_hist_UI")),
     plotOutput(ns("res_redd_hist"))
@@ -367,7 +357,7 @@ mod_tool_UI2 <- function(id, i18n){
   ## + Sensitivity panel =======================================================
   div_sens_init <- div(
     id    = ns("sens_init"),
-    bsicons::bs_icon("gear"), i18n$t(" Run the sensitivity analysis in the sidebar."),
+    bsicons::bs_icon("gear"), i18n$t(.tr$sens_msg_init),
     class = "text-warning",
     style = "font-style: italic;"
   )
@@ -375,9 +365,9 @@ mod_tool_UI2 <- function(id, i18n){
   ## ++ Sens cards -------------------------------------------------------------
   card_sens_var <- card(
     full_screen = TRUE,
-    h5(i18n$t("Contribution to uncertainty: activity data vs emission factors")),
+    card_header(i18n$t(.tr$sens_card_var)),
     p(
-      i18n$t("Share of the variance of each result explained by each input group (delta method, first-order)."),
+      i18n$t(.tr$sens_card_var_txt),
       class = "text-muted small"
     ),
     plotOutput(ns("sens_var_gg"))
@@ -385,32 +375,32 @@ mod_tool_UI2 <- function(id, i18n){
 
   card_sens_tornado <- card(
     full_screen = TRUE,
-    h5(i18n$t("Activity data sources")),
+    card_header(i18n$t(.tr$sens_card_ad)),
     p(
-      i18n$t("Result when one activity data source goes from its lower to its upper confidence bound, all other inputs at their mean."),
+      i18n$t(.tr$sens_card_ad_txt),
       class = "text-muted small"
     ),
     layout_column_wrap(
       width = "200px", fixed_width = TRUE,
-      selectInput(inputId = ns("sens_select_output"), label = i18n$t("Select a result"), choices = NULL),
-      numericInput(inputId = ns("sens_top_n"), label = i18n$t("Number of sources"), value = 20, min = 5, max = 200, step = 5)
+      selectInput(inputId = ns("sens_select_output"), label = i18n$t(.tr$sens_select_output), choices = NULL),
+      numericInput(inputId = ns("sens_top_n"), label = i18n$t(.tr$sens_top_n), value = 20, min = 5, max = 200, step = 5)
     ),
     plotOutput(ns("sens_tornado_gg"), height = "auto")
   )
 
   card_sens_dl <- card(
+    card_header(i18n$t(.tr$sens_card_dl)),
     card_body(
       fillable = FALSE,
-      h5(i18n$t("Download the sensitivity results")),
       downloadButton(
         outputId = ns("dl_sens_var"),
-        label    = i18n$t("Variance shares by input group"),
-        class    = "btn-outline-secondary btn-small form-group"
+        label    = i18n$t(.tr$sens_dl_var),
+        class    = "btn-primary btn-sm form-group"
       ),
       downloadButton(
         outputId = ns("dl_sens_ad"),
-        label    = i18n$t("Activity data sources"),
-        class    = "btn-outline-secondary btn-small form-group"
+        label    = i18n$t(.tr$sens_dl_ad),
+        class    = "btn-primary btn-sm form-group"
       )
     )
   )
@@ -424,10 +414,10 @@ mod_tool_UI2 <- function(id, i18n){
   ## ++ Transition details (from the simulations) ------------------------------
   card_sens_trans <- card(
     full_screen = TRUE,
-    h5(i18n$t("Land use transition details")),
+    card_header(i18n$t(.tr$sens_card_trans)),
     div(
       id    = ns("sens_trans_init"),
-      i18n$t("Run simulations to see the details per land use transition."),
+      i18n$t(.tr$sens_trans_init),
       class = "text-warning",
       style = "font-style: italic;"
     ),
@@ -440,8 +430,6 @@ mod_tool_UI2 <- function(id, i18n){
   ##
 
   tagList(
-
-    h2(i18n$t("Run the uncertainty analysis")),
 
     br(),
 
@@ -461,7 +449,7 @@ mod_tool_UI2 <- function(id, i18n){
 
       ## + Check panel =========================================================
       nav_panel(
-        title = i18n$t("Check your data"),
+        title = i18n$t(.tr$tab_check),
         value = "check_tab",
         icon  = icon("circle-check"),
         div_check_init,
@@ -471,7 +459,7 @@ mod_tool_UI2 <- function(id, i18n){
 
       ## + Results panel =======================================================
       nav_panel(
-        title = i18n$t("Results"),
+        title = i18n$t(.tr$tab_res),
         value = "res_tab",
         icon  = icon("chart-simple"),
         div_res_init,
@@ -482,7 +470,7 @@ mod_tool_UI2 <- function(id, i18n){
 
       ## + Sensitivity panel ===================================================
       nav_panel(
-        title = i18n$t("Sensitivity"),
+        title = i18n$t(.tr$tab_sens),
         value = "sensi_tab",
         icon  = icon("magnifying-glass"),
         div_sens_init,

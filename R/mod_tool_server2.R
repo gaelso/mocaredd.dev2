@@ -15,8 +15,11 @@
 #'
 #' @importFrom rlang .data
 #'
+#' Text built here goes through i18n$t(.tr$key): inside render functions it
+#' follows the language selector; in observers it uses the language at run time.
+#'
 #' @noRd
-mod_tool_server2 <- function(id, rv) {
+mod_tool_server2 <- function(id, rv, i18n, .tr) {
 
   moduleServer(id, function(input, output, session) {
 
@@ -98,7 +101,7 @@ mod_tool_server2 <- function(id, rv) {
         session = session,
         id      = "prog_allchecks",
         value   = 0,
-        title   = "Starting checks...",
+        title   = i18n$t(.tr$check_progress_start),
         status  = "primary"
       )
 
@@ -199,39 +202,39 @@ mod_tool_server2 <- function(id, rv) {
     ## + Time periods ----------------------------------------------------------
     output$vb_nb_time <- renderUI({
       req(rv$checks$all_ok)
-      HTML(paste0(nrow(rv$inputs$time), "&nbsp;reporting periods"))
+      HTML(paste0(nrow(rv$inputs$time), "&nbsp;", i18n$t(.tr$vb_time_value)))
     })
 
     output$vb_nb_ref <- renderText({
       req(rv$checks$all_ok)
       time_sub <- rv$inputs$time |>
         dplyr::filter(stringr::str_detect(.data$period_type, "REF"))
-      paste0(nrow(time_sub), " for reference")
+      paste0(nrow(time_sub), " ", i18n$t(.tr$vb_time_ref))
     })
 
     output$vb_nb_mon <- renderText({
       req(rv$checks$all_ok)
       time_sub <- rv$inputs$time |>
         dplyr::filter(stringr::str_detect(.data$period_type, "M"))
-      paste0(nrow(time_sub), " for monitoring")
+      paste0(nrow(time_sub), " ", i18n$t(.tr$vb_time_mon))
     })
 
     ## + Activity data ---------------------------------------------------------
     output$vb_nb_trans <- renderUI({
       req(rv$checks$all_ok)
-      HTML(paste0(nrow(rv$inputs$area), "&nbsp;land use transitions"))
+      HTML(paste0(nrow(rv$inputs$area), "&nbsp;", i18n$t(.tr$vb_ad_value)))
     })
 
     output$vb_nb_lu <- renderText({
       req(rv$checks$all_ok)
       nb_lu <- length(unique(c(rv$inputs$area$lu_initial_id, rv$inputs$area$lu_final_id)))
-      paste0(nb_lu, " land use categories")
+      paste0(nb_lu, " ", i18n$t(.tr$vb_ad_lu))
     })
 
     output$vb_nb_redd <- renderText({
       req(rv$checks$all_ok)
       nb_redd <- unique(rv$inputs$area$redd_activity)
-      paste0(length(nb_redd), " REDD+ activities: ", paste(nb_redd, collapse = ", "))
+      paste0(length(nb_redd), " ", i18n$t(.tr$vb_ad_redd), " ", paste(nb_redd, collapse = ", "))
     })
 
     ## + Carbon stock ----------------------------------------------------------
@@ -242,7 +245,7 @@ mod_tool_server2 <- function(id, rv) {
       n_pools    <- length(real_pools)
       if ("RS"  %in% pools) n_pools <- n_pools + 1
       if (length(pools) == 1 && pools == "ALL") n_pools <- 1
-      HTML(paste0(n_pools, "&nbsp;Carbon pools"))
+      HTML(paste0(n_pools, "&nbsp;", i18n$t(.tr$vb_cs_value)))
     })
 
     output$vb_c_pools <- renderText({
@@ -257,9 +260,9 @@ mod_tool_server2 <- function(id, rv) {
     output$vb_dg_method <- renderText({
       req(rv$checks$all_ok)
       if ("DG_ratio" %in% unique(rv$inputs$carbon$c_element)) {
-        paste0("Degradation ratio applied to ", rv$inputs$setup$dg_pool)
+        paste0(i18n$t(.tr$vb_cs_dg_ratio), " ", rv$inputs$setup$dg_pool)
       } else {
-        "Carbon stock difference"
+        i18n$t(.tr$vb_cs_dg_diff)
       }
     })
 
@@ -268,10 +271,26 @@ mod_tool_server2 <- function(id, rv) {
     output$check_result_table <- gt::render_gt({
       req(rv$checks$all_ok, rv$checks$ari_res)
 
+      ## Group and row labels of fct_arithmetic_mean2() are the en values of the keys
       rv$checks$ari_res$emissions_table |>
+        dplyr::mutate(
+          grp = dplyr::case_when(
+            .data$grp == .tr$check_tbl_grp_period ~ i18n$t(.tr$check_tbl_grp_period),
+            .data$grp == .tr$check_tbl_grp_er     ~ i18n$t(.tr$check_tbl_grp_er),
+            TRUE                                  ~ .data$grp
+          ),
+          item = .data$item |>
+            stringr::str_replace(paste0("^", .tr$check_tbl_ref), i18n$t(.tr$check_tbl_ref)) |>
+            stringr::str_replace(paste0("^", .tr$check_tbl_emi, " "), paste0(i18n$t(.tr$check_tbl_emi), " ")) |>
+            stringr::str_replace(paste0("^", .tr$check_tbl_red, " "), paste0(i18n$t(.tr$check_tbl_red), " ")) |>
+            stringr::str_replace(paste0("^", .tr$check_tbl_noperiod, "$"), i18n$t(.tr$check_tbl_noperiod))
+        ) |>
         gt::gt(rowname_col = "item", groupname_col = "grp") |>
-        gt::tab_spanner(label = "Emissions (tCO2e/yr)", columns = c("DF", "DG", "total")) |>
-        gt::cols_label(years = "Years", DF = "Deforestation", DG = "Degradation", total = "Total", U_pct = "U (%)") |>
+        gt::tab_spanner(label = i18n$t(.tr$check_tbl_spanner), columns = c("DF", "DG", "total")) |>
+        gt::cols_label(
+          years = i18n$t(.tr$check_tbl_years), DF = i18n$t(.tr$check_tbl_df), DG = i18n$t(.tr$check_tbl_dg),
+          total = i18n$t(.tr$check_tbl_total), U_pct = "U (%)"
+        ) |>
         gt::fmt_number(columns = c("DF", "DG", "total"), decimals = 0, use_seps = TRUE) |>
         gt::fmt_number(columns = "U_pct", decimals = 1, pattern = "{x}%") |>
         gt::sub_missing(columns = gt::everything(), missing_text = "") |>
@@ -289,9 +308,10 @@ mod_tool_server2 <- function(id, rv) {
     output$check_select_period_UI <- renderUI({
       req(rv$inputs$time)
       selectInput(
-        inputId = ns("check_select_period"),
-        label   = "Select a time period",
-        choices = rv$inputs$time$period_no
+        inputId  = ns("check_select_period"),
+        label    = i18n$t(.tr$check_select_period),
+        choices  = rv$inputs$time$period_no,
+        selected = if (isTRUE(isolate(input$check_select_period) %in% rv$inputs$time$period_no)) isolate(input$check_select_period)
       )
     })
 
@@ -325,13 +345,13 @@ mod_tool_server2 <- function(id, rv) {
         ) |>
         dplyr::arrange(.data$lu_initial) |>
         gt::gt(rowname_col = "lu_initial") |>
-        gt::tab_stubhead(label = "Area (ha)") |>
+        gt::tab_stubhead(label = i18n$t(.tr$check_lum_area)) |>
         gt::tab_row_group(
-          label = gt::md(paste0("**Initial land use ", year_start, "**")),
+          label = gt::md(paste0("**", i18n$t(.tr$check_lum_initial), " ", year_start, "**")),
           rows  = gt::everything()
         ) |>
         gt::tab_spanner(
-          label   = gt::md(paste0("**Final land use ", year_end, "**")),
+          label   = gt::md(paste0("**", i18n$t(.tr$check_lum_final), " ", year_end, "**")),
           columns = gt::everything()
         ) |>
         gt::fmt_number(columns = gt::everything(), decimals = 0, use_seps = TRUE)
@@ -357,7 +377,7 @@ mod_tool_server2 <- function(id, rv) {
       ## Set seed ---------------------------------------------------------------
       shinyWidgets::updateProgressBar(
         session = session, id = "prog_res", value = 0,
-        title = "Set seed for random simulations...", status = "primary"
+        title = i18n$t(.tr$res_prog_seed), status = "primary"
       )
 
       if (!is.na(rv$inputs$setup$ran_seed)) {
@@ -372,7 +392,7 @@ mod_tool_server2 <- function(id, rv) {
       ## LU transition level simulations ----------------------------------------
       shinyWidgets::updateProgressBar(
         session = session, id = "prog_res", value = 10,
-        title = "Simulate emissions for each land use transition...", status = "primary"
+        title = i18n$t(.tr$res_prog_trans), status = "primary"
       )
 
       rv$mcs$sim_trans <- fct_combine_mcs_E(.checked_data = rv$checked)
@@ -382,7 +402,7 @@ mod_tool_server2 <- function(id, rv) {
       ## Aggregate simulations --------------------------------------------------
       shinyWidgets::updateProgressBar(
         session = session, id = "prog_res", value = 40,
-        title = "Calculate Emission Reductions...", status = "primary"
+        title = i18n$t(.tr$res_prog_er), status = "primary"
       )
 
       rv$mcs$sim_redd <- rv$mcs$sim_trans |>
@@ -407,7 +427,7 @@ mod_tool_server2 <- function(id, rv) {
       ## Stats from simulations -------------------------------------------------
       shinyWidgets::updateProgressBar(
         session = session, id = "prog_res", value = 60,
-        title = "Get medians and confidence intervals...", status = "primary"
+        title = i18n$t(.tr$res_prog_stats), status = "primary"
       )
 
       rv$mcs$res_trans <- fct_calc_res(
@@ -462,7 +482,7 @@ mod_tool_server2 <- function(id, rv) {
       ## Forest plots -----------------------------------------------------------
       shinyWidgets::updateProgressBar(
         session = session, id = "prog_res", value = 80,
-        title = "Prepare outputs...", status = "primary"
+        title = i18n$t(.tr$res_prog_out), status = "primary"
       )
 
       ## No-binding hack for R CMD check
@@ -477,7 +497,7 @@ mod_tool_server2 <- function(id, rv) {
         .uperc     = E_U,
         .cilower   = E_cilower,
         .ciupper   = E_ciupper,
-        .id_colname = "Land use transition",
+        .id_colname = i18n$t(.tr$res_fp_trans),
         .conflevel = rv$inputs$setup$conf_level_txt
       )
 
@@ -488,7 +508,7 @@ mod_tool_server2 <- function(id, rv) {
         .uperc     = E_U,
         .cilower   = E_cilower,
         .ciupper   = E_ciupper,
-        .id_colname = "REDD+ activities",
+        .id_colname = i18n$t(.tr$res_fp_redd),
         .conflevel = rv$inputs$setup$conf_level_txt
       )
 
@@ -501,7 +521,7 @@ mod_tool_server2 <- function(id, rv) {
         .uperc      = E_U,
         .cilower    = E_cilower,
         .ciupper    = E_ciupper,
-        .id_colname = "Time periods",
+        .id_colname = i18n$t(.tr$res_fp_time),
         .conflevel  = rv$inputs$setup$conf_level_txt,
         .filename   = NA
       )
@@ -509,7 +529,7 @@ mod_tool_server2 <- function(id, rv) {
       ## Finalise ---------------------------------------------------------------
       shinyWidgets::updateProgressBar(
         session = session, id = "prog_res", value = 100,
-        title = "All steps completed!", status = "success"
+        title = i18n$t(.tr$res_prog_done), status = "success"
       )
 
       rv$mcs$all_done <- TRUE
@@ -573,9 +593,10 @@ mod_tool_server2 <- function(id, rv) {
     output$res_select_ER_hist_UI <- renderUI({
       req(rv$mcs$res_ER3)
       selectInput(
-        inputId = ns("res_select_ER_hist"),
-        label   = "Select a period",
-        choices = rv$mcs$res_ER3$period_type
+        inputId  = ns("res_select_ER_hist"),
+        label    = i18n$t(.tr$res_select_period),
+        choices  = rv$mcs$res_ER3$period_type,
+        selected = if (isTRUE(isolate(input$res_select_ER_hist) %in% rv$mcs$res_ER3$period_type)) isolate(input$res_select_ER_hist)
       )
     })
 
@@ -613,18 +634,20 @@ mod_tool_server2 <- function(id, rv) {
     output$res_select_redd_hist_UI <- renderUI({
       req(rv$mcs$sim_redd)
       selectInput(
-        inputId = ns("res_select_redd_hist"),
-        label   = "Select a REDD+ activity",
-        choices = unique(rv$mcs$sim_redd$redd_activity)
+        inputId  = ns("res_select_redd_hist"),
+        label    = i18n$t(.tr$res_select_redd),
+        choices  = unique(rv$mcs$sim_redd$redd_activity),
+        selected = if (isTRUE(isolate(input$res_select_redd_hist) %in% rv$mcs$sim_redd$redd_activity)) isolate(input$res_select_redd_hist)
       )
     })
 
     output$res_select_period_hist_UI <- renderUI({
       req(rv$mcs$sim_redd)
       selectInput(
-        inputId = ns("res_select_period_hist"),
-        label   = "Select a time period",
-        choices = sort(unique(rv$mcs$sim_redd$time_period))
+        inputId  = ns("res_select_period_hist"),
+        label    = i18n$t(.tr$res_select_time),
+        choices  = sort(unique(rv$mcs$sim_redd$time_period)),
+        selected = if (isTRUE(isolate(input$res_select_period_hist) %in% rv$mcs$sim_redd$time_period)) isolate(input$res_select_period_hist)
       )
     })
 
@@ -657,7 +680,7 @@ mod_tool_server2 <- function(id, rv) {
       rv$sens <- tryCatch(
         fct_sensitivity2(.checked_data = rv$checked),
         error = function(e) {
-          showNotification(paste0("Sensitivity analysis failed: ", conditionMessage(e)), type = "error", duration = NULL)
+          showNotification(paste(i18n$t(.tr$sens_error), conditionMessage(e)), type = "error", duration = NULL)
           NULL
         }
       )
