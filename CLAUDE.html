@@ -39,7 +39,7 @@
 <ul><li>R only. No Python scripts as deliverables. Base R + tidyverse-style packages already in DESCRIPTION.</li>
 <li>Never hand-edit <code>NAMESPACE</code> or <code>man/</code>. Edit roxygen, then <code>devtools::document()</code>.</li>
 <li>New dependencies: <code>usethis::use_package()</code>, call as <code>pkg::fun()</code>. Don’t add heavy deps without asking.</li>
-<li>All user-facing UI strings go through <code>i18n$t()</code> and <code>inst/assets/translations.json</code>.</li>
+<li>All user-facing UI strings go through <code>i18n$t(.tr$key)</code>: the key in <code>.tr_keys()</code> (<code>R/utils-tr.R</code>), its value matching exactly an <code>en</code> entry in <code>inst/assets/translations.json</code> (with <code>fr</code>, <code>sp</code>). Update both files.</li>
 <li>Keep text short: comments, roxygen, messages and explanations to me. No filler.</li>
 <li>Don’t change numerical results silently. If a change alters ERR, E or uncertainty values on the test workbooks, say so and show before/after.</li>
 </ul></div>
@@ -62,10 +62,12 @@
 <div class="section level2">
 <h2 id="code-map">Code map<a class="anchor" aria-label="anchor" href="#code-map"></a></h2>
 <p><strong>Active app path (v2)</strong> — wired in <code>R/shiny_run_mocaredd_dev2.R</code>:</p>
-<ul><li>UI/server modules: <code>mod_home_UI2</code> / <code>mod_home_server2</code>, <code>mod_tool_UI2</code> / <code>mod_tool_server2</code>, <code>mod_about_*</code>.</li>
-<li>Shared state: one <code>rv</code> reactiveValues list (<code>checks</code>, <code>inputs</code>, <code>sims</code>, <code>res</code>, <code>gt</code>, <code>histo</code>, <code>actions</code>) passed to all modules. <code>rv$checked</code> holds the full <code><a href="reference/fct_checkinput.html">fct_checkinput()</a></code> output.</li>
+<ul><li>UI/server modules: <code>mod_home_UI2</code> / <code>mod_home_server2</code>, <code>mod_tool_UI2</code> / <code>mod_tool_server2</code>, <code>mod_about_UI</code> / <code>mod_about_server</code>. UI functions take <code>(id, i18n, .tr)</code>; <code>mod_tool_server2</code> takes <code>(id, rv, i18n, .tr)</code>.</li>
+<li>Translations (en, fr, sp): UI text with <code>i18n$t(.tr$key)</code> is swapped on the client. In the server, <code>i18n$t()</code> inside render functions follows the language selector (shiny.i18n &gt;= 0.3 reads the session language); in observers (progress titles, forest plot column names) it uses the language at run time. In <code>renderUI()</code> selects keep the choice with <code>selected = isolate(input$...)</code>. Text built inside <code>fct_*</code> functions (ggplot labels, forest plot headers, histograms, <code><a href="reference/fct_checkinput.html">fct_checkinput()</a></code> log) stays English.</li>
+<li>Shared state: one <code>rv</code> reactiveValues list (<code>checks</code>, <code>inputs</code>, <code>sims</code>, <code>res</code>, <code>gt</code>, <code>histo</code>, <code>actions</code>, <code>ui</code>) passed to all modules. <code>rv$checked</code> holds the full <code><a href="reference/fct_checkinput.html">fct_checkinput()</a></code> output. Tab navigation through <code>rv$actions$to_tool</code> / <code>to_about</code>; <code>rv$ui$dark_mode</code> (“light”/“dark”) from the navbar toggle.</li>
+<li>About page (<code>mod_about_UI.R</code>): workflow (four steps, detailed workflow modal, documentation link), demo dataset (download of <code>inst/extdata/mocaredd-templatev2-simple.xlsx</code> and a data overview card: update it if the template changes), context, under the hood (package, dependencies, latest developments until the last month, use cases).</li>
 <li>
-<code>inst/assets</code> is served at <code>assets/</code> via <code>.onLoad()</code> in <code>R/zzz.R</code>.</li>
+<code>inst/assets</code> is served at <code>assets/</code> via <code>.onLoad()</code> in <code>R/zzz.R</code>. CSS and JS are linked with a <code>?v=&lt;asset_v&gt;</code> cache-busting stamp (latest modification time in <code>inst/assets</code>); keep it when adding a stylesheet or script.</li>
 </ul><p><strong>Calculation chain</strong> (used by <code>mod_tool_server2</code>):</p>
 <ol style="list-style-type: decimal"><li>
 <code><a href="reference/fct_checkinput.html">fct_checkinput()</a></code> reads and validates the xlsx, detects <code>template_version</code> (1 or 2), returns <code>$data</code> with <code>setup</code>, <code>time</code>, <code>area</code>, <code>carbon</code>. Every downstream function takes <code>.checked_data</code>.</li>
@@ -81,8 +83,46 @@
 <code><a href="reference/fct_calc_res.html">fct_calc_res()</a></code>, <code><a href="reference/fct_forestplot.html">fct_forestplot()</a></code>, <code><a href="reference/fct_histogram.html">fct_histogram()</a></code>, <code><a href="reference/fct_round.html">fct_round()</a></code>: results and outputs.</li>
 <li>Helpers: <code><a href="reference/fct_make_mcs.html">fct_make_mcs()</a></code> (PDF draws), <code><a href="reference/fct_make_formula2.html">fct_make_formula2()</a></code> (carbon stock formula, biomass factored: <code>AGB * (1 + RS) * CF</code>; <code><a href="reference/fct_make_formula.html">fct_make_formula()</a></code> kept for comparison), <code><a href="reference/fct_make_formula_U.html">fct_make_formula_U()</a></code> (matching se formula, IPCC Approach 1 product/sum rules, evaluated with <code>&lt;el&gt;</code> and <code>&lt;el&gt;_se</code>), <code>fct_make_EF()</code>.</li>
 </ol><p><strong>Legacy v1</strong> (not wired in the app; keep until replacement confirmed, don’t extend): <code>mod_home_UI</code>, <code>mod_home_server</code>, <code>mod_tool_UI</code>, <code>mod_tool_server</code>, <code>fct_check_data2</code>, <code>fct_arithmetic_mean</code>, <code>fct_sensitivity</code> (unexported).</p>
-<p><strong>Function conventions:</strong> <code>fct_*</code> for functions, <code>mod_*</code> for modules, arguments prefixed with a dot (<code>.checked_data</code>, <code>.n_iter</code>), native pipe <code>|&gt;</code>, <code>.data$col</code> inside dplyr, <code><a href="https://rlang.r-lib.org/reference/dot-data.html" class="external-link">rlang::.data</a></code> imported.</p>
 </div>
+<div class="section level2">
+<h2 id="branding-and-styling">Branding and styling<a class="anchor" aria-label="anchor" href="#branding-and-styling"></a></h2>
+<p>Same design as ArenaLytics (<code>gaelso/arenalytics_dev</code>, branch <code>branding</code>): FAO Design System (v3.7.2), FAO Logo Policy, FAO Global Goals visual identity. The reference documents are FAO-internal: keep them out of the repo and never quote them in code, comments or docs.</p>
+<ul><li>
+<strong>Theme:</strong> <code>bs_theme()</code> with Yeti; Open Sans (text) and Fira Code (code), self-hosted in <code>inst/assets/fonts/</code> (<code>data-raw/vendor_fonts.R</code>). Language flags self-hosted in <code>inst/assets/flags/</code> (<code>data-raw/vendor_flags.R</code>). No CDN asset at runtime.</li>
+<li>
+<strong>Colours, one source:</strong> <code>app_colors</code> (light/dark) in <code>R/shiny_run_mocaredd_dev2.R</code>. Each entry becomes a CSS variable <code>--app-&lt;name&gt;</code> for <code>:root</code> and <code>[data-bs-theme=dark]</code>; light values also feed <code>bs_theme()</code>. In <code>style.css</code> use these variables, not hex codes.</li>
+<li>
+<strong>Header:</strong> official FAO 3-line English logo, 48 px, top left, not a link, light/dark files swapped by CSS; then the two-line title linking home (<code>{mocaredd}</code> over <code>.tr$app_title</code>). Fixed 72 px navbar, <code>navbar-expand-xl</code>. Files in <code>inst/assets/branding/</code> are used unmodified.</li>
+<li>
+<strong>Footer:</strong> <code>app_footer()</code>: Global Goals icons (60 px), six fao.org links following the language (<code>data-href-&lt;lang&gt;</code>), app credit with <code><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">utils::packageVersion()</a></code> and AIM4Forests, © FAO.</li>
+<li>
+<strong><code>inst/assets/js_brand.js</code>:</strong> <code>app-locale</code> message on language change (<code>&lt;html lang&gt;</code>, <code>data-src/alt/href-&lt;lang&gt;</code> swaps), favicon black/white with the browser theme. <code>js_handlers.js</code>: <code>scroll_top</code>.</li>
+<li>
+<strong>Home (differs from ArenaLytics):</strong> full-width banner as on openforis.org (<code>inst/assets/hero-olive-amber.svg</code>, no caption, Open Foris green strip below). Text stays outside the banner: title left, intro text and primary button right (stacked on small screens), then three feature cards (<code>.feature-card</code>).</li>
+<li>
+<strong>Links:</strong> text links in panels and footer use the body colour, underlined, grey on hover. External links open in a new tab.</li>
+<li>
+<strong>Buttons:</strong> every action and download button is <code>btn-primary</code>. <code>fileInput()</code>’s “Browse…” is made primary with <code><a href="https://rstudio.github.io/htmltools/reference/tagQuery.html" class="external-link">htmltools::tagQuery()</a></code>. Home buttons add <code>btn-icon</code> and <code>bsicons::bs_icon("chevron-right")</code>.</li>
+<li>
+<strong>Toggles (shinyWidgets), if needed:</strong> segmented switch <code>radioGroupButtons(status = "segment")</code> in <code>div(class = "seg-control")</code>; chips <code>checkboxGroupButtons(status = "chip")</code> in <code>div(class = "chip-group")</code>. Style the selected option with <code>.btn-check:checked + .btn</code>; avoid <code>status = "default"</code>.</li>
+<li>
+<strong>Cards and sidebar:</strong> titles in <code>card_header()</code> (FAO Primary Light), 0.5rem radius; sidebar without background; accordion headers in Open Foris green tint. Progress consoles use <code>class = "app-console"</code>.</li>
+<li>
+<strong>Info notes:</strong> <code>div(class = "text-info", style = "font-size: 0.85em; font-style: italic;", bsicons::bs_icon("info-circle"), " ", text)</code>.</li>
+<li>
+<strong>Dark mode:</strong> navbar toggle <code>input_dark_mode()</code>. ggplot figures and gt tables are still drawn light only; for a dark version stack two outputs in <code>.plot-themed</code> / <code>.plot-themed-dark</code> (CSS ready).</li>
+</ul></div>
+<div class="section level2">
+<h2 id="coding-conventions">Coding conventions<a class="anchor" aria-label="anchor" href="#coding-conventions"></a></h2>
+<ol style="list-style-type: decimal"><li>Prefer tidyverse over base R: <code>purrr::map*()</code> / <code>walk()</code> over the <code>apply</code> family and <code>for</code> loops where a functional is natural; <code>dplyr</code>, <code>tidyr</code>, <code>stringr</code> over <code>subset</code>, <code>merge</code>, <code>grepl</code>, <code>gsub</code>.</li>
+<li>Helper functions only when a block of 5+ lines is reused more than 4 times.</li>
+<li>Code reads chronologically: load → prepare → compute → output, pipes for one transformation, no forward references.</li>
+</ol><ul><li>Namespace-qualify calls (<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter</a></code>); only <code>shiny</code> and <code>bslib</code> imported wholesale. <code>fct_*</code> for functions, <code>mod_&lt;name&gt;_UI</code> / <code>mod_&lt;name&gt;_server</code> for modules, <code>utils_*</code> for internal helpers. Arguments prefixed with a dot (<code>.checked_data</code>, <code>.n_iter</code>), native pipe <code>|&gt;</code>, <code>.data$col</code> inside dplyr, <code><a href="https://rlang.r-lib.org/reference/dot-data.html" class="external-link">rlang::.data</a></code> imported.</li>
+<li>Section outline: main section <code>##</code> / <code>## Title ######</code> / <code>##</code> (3 empty rows before, 1 after); subsection <code>## + Title ======</code>; in <code>fct_*</code> files numbered steps <code>## 1. Step ------</code>.</li>
+<li>Each <code>fct_*</code> function starts with a commented <code>## !!! FOR TESTING ONLY</code> block setting its arguments. Flag workarounds with <code>## !!! TMP !!!</code>.</li>
+<li>Log progress with <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code> (shown in the app consoles).</li>
+<li>R source files are ASCII: write non-ASCII as escapes (<code>"é"</code>, <code>"©"</code>). Translated text belongs in <code>translations.json</code> (UTF-8).</li>
+</ul></div>
 <div class="section level2">
 <h2 id="domain-essentials">Domain essentials<a class="anchor" aria-label="anchor" href="#domain-essentials"></a></h2>
 <ul><li>Emissions per transition: E = AD × EF. ERR = FREL (reference period mean) − monitoring emissions. Periods are weighted by length (1/n_REF vs 1/n_MON), so monitoring-period transitions carry more weight per unit of area uncertainty.</li>
@@ -175,7 +215,6 @@
 <h2 id="known-issues-spotted-not-yet-fixed">Known issues (spotted, not yet fixed)<a class="anchor" aria-label="anchor" href="#known-issues-spotted-not-yet-fixed"></a></h2>
 <ul><li>
 <code>inst/extdata/~$test-example2-with-sims.xlsx</code> is an Excel lock file committed by mistake.</li>
-<li>App footer is placeholder text (“MyApp”, “Your Name”, “XYZ Institute”).</li>
 <li>
 <code><a href="reference/fct_make_mcs.html">fct_make_mcs()</a></code>: “beta” uses <code>.params</code> only and ignores <code>.mean</code>/<code>.se</code>; no else branch for unsupported PDFs (returns an error on undefined <code>SIMS</code>). Output rounded to 3 decimals.</li>
 <li>

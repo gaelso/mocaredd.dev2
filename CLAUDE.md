@@ -13,8 +13,10 @@ teams (semi-technical ministry/agency staff).
   `devtools::document()`.
 - New dependencies: `usethis::use_package()`, call as `pkg::fun()`.
   Don’t add heavy deps without asking.
-- All user-facing UI strings go through `i18n$t()` and
-  `inst/assets/translations.json`.
+- All user-facing UI strings go through `i18n$t(.tr$key)`: the key in
+  `.tr_keys()` (`R/utils-tr.R`), its value matching exactly an `en`
+  entry in `inst/assets/translations.json` (with `fr`, `sp`). Update
+  both files.
 - Keep text short: comments, roxygen, messages and explanations to me.
   No filler.
 - Don’t change numerical results silently. If a change alters ERR, E or
@@ -54,13 +56,34 @@ the extdata workbooks are welcome.
 **Active app path (v2)** — wired in `R/shiny_run_mocaredd_dev2.R`:
 
 - UI/server modules: `mod_home_UI2` / `mod_home_server2`, `mod_tool_UI2`
-  / `mod_tool_server2`, `mod_about_*`.
+  / `mod_tool_server2`, `mod_about_UI` / `mod_about_server`. UI
+  functions take `(id, i18n, .tr)`; `mod_tool_server2` takes
+  `(id, rv, i18n, .tr)`.
+- Translations (en, fr, sp): UI text with `i18n$t(.tr$key)` is swapped
+  on the client. In the server, `i18n$t()` inside render functions
+  follows the language selector (shiny.i18n \>= 0.3 reads the session
+  language); in observers (progress titles, forest plot column names) it
+  uses the language at run time. In `renderUI()` selects keep the choice
+  with `selected = isolate(input$...)`. Text built inside `fct_*`
+  functions (ggplot labels, forest plot headers, histograms,
+  [`fct_checkinput()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_checkinput.md)
+  log) stays English.
 - Shared state: one `rv` reactiveValues list (`checks`, `inputs`,
-  `sims`, `res`, `gt`, `histo`, `actions`) passed to all modules.
+  `sims`, `res`, `gt`, `histo`, `actions`, `ui`) passed to all modules.
   `rv$checked` holds the full
   [`fct_checkinput()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_checkinput.md)
-  output.
-- `inst/assets` is served at `assets/` via `.onLoad()` in `R/zzz.R`.
+  output. Tab navigation through `rv$actions$to_tool` / `to_about`;
+  `rv$ui$dark_mode` (“light”/“dark”) from the navbar toggle.
+- About page (`mod_about_UI.R`): workflow (four steps, detailed workflow
+  modal, documentation link), demo dataset (download of
+  `inst/extdata/mocaredd-templatev2-simple.xlsx` and a data overview
+  card: update it if the template changes), context, under the hood
+  (package, dependencies, latest developments until the last month, use
+  cases).
+- `inst/assets` is served at `assets/` via `.onLoad()` in `R/zzz.R`. CSS
+  and JS are linked with a `?v=<asset_v>` cache-busting stamp (latest
+  modification time in `inst/assets`); keep it when adding a stylesheet
+  or script.
 
 **Calculation chain** (used by `mod_tool_server2`):
 
@@ -105,11 +128,89 @@ don’t extend): `mod_home_UI`, `mod_home_server`, `mod_tool_UI`,
 `mod_tool_server`, `fct_check_data2`, `fct_arithmetic_mean`,
 `fct_sensitivity` (unexported).
 
-**Function conventions:** `fct_*` for functions, `mod_*` for modules,
-arguments prefixed with a dot (`.checked_data`, `.n_iter`), native pipe
-`|>`, `.data$col` inside dplyr,
-[`rlang::.data`](https://rlang.r-lib.org/reference/dot-data.html)
-imported.
+## Branding and styling
+
+Same design as ArenaLytics (`gaelso/arenalytics_dev`, branch
+`branding`): FAO Design System (v3.7.2), FAO Logo Policy, FAO Global
+Goals visual identity. The reference documents are FAO-internal: keep
+them out of the repo and never quote them in code, comments or docs.
+
+- **Theme:** `bs_theme()` with Yeti; Open Sans (text) and Fira Code
+  (code), self-hosted in `inst/assets/fonts/`
+  (`data-raw/vendor_fonts.R`). Language flags self-hosted in
+  `inst/assets/flags/` (`data-raw/vendor_flags.R`). No CDN asset at
+  runtime.
+- **Colours, one source:** `app_colors` (light/dark) in
+  `R/shiny_run_mocaredd_dev2.R`. Each entry becomes a CSS variable
+  `--app-<name>` for `:root` and `[data-bs-theme=dark]`; light values
+  also feed `bs_theme()`. In `style.css` use these variables, not hex
+  codes.
+- **Header:** official FAO 3-line English logo, 48 px, top left, not a
+  link, light/dark files swapped by CSS; then the two-line title linking
+  home (`{mocaredd}` over `.tr$app_title`). Fixed 72 px navbar,
+  `navbar-expand-xl`. Files in `inst/assets/branding/` are used
+  unmodified.
+- **Footer:** `app_footer()`: Global Goals icons (60 px), six fao.org
+  links following the language (`data-href-<lang>`), app credit with
+  [`utils::packageVersion()`](https://rdrr.io/r/utils/packageDescription.html)
+  and AIM4Forests, © FAO.
+- **`inst/assets/js_brand.js`:** `app-locale` message on language change
+  (`<html lang>`, `data-src/alt/href-<lang>` swaps), favicon black/white
+  with the browser theme. `js_handlers.js`: `scroll_top`.
+- **Home (differs from ArenaLytics):** full-width banner as on
+  openforis.org (`inst/assets/hero-olive-amber.svg`, no caption, Open
+  Foris green strip below). Text stays outside the banner: title left,
+  intro text and primary button right (stacked on small screens), then
+  three feature cards (`.feature-card`).
+- **Links:** text links in panels and footer use the body colour,
+  underlined, grey on hover. External links open in a new tab.
+- **Buttons:** every action and download button is `btn-primary`.
+  `fileInput()`’s “Browse…” is made primary with
+  [`htmltools::tagQuery()`](https://rstudio.github.io/htmltools/reference/tagQuery.html).
+  Home buttons add `btn-icon` and `bsicons::bs_icon("chevron-right")`.
+- **Toggles (shinyWidgets), if needed:** segmented switch
+  `radioGroupButtons(status = "segment")` in
+  `div(class = "seg-control")`; chips
+  `checkboxGroupButtons(status = "chip")` in
+  `div(class = "chip-group")`. Style the selected option with
+  `.btn-check:checked + .btn`; avoid `status = "default"`.
+- **Cards and sidebar:** titles in `card_header()` (FAO Primary Light),
+  0.5rem radius; sidebar without background; accordion headers in Open
+  Foris green tint. Progress consoles use `class = "app-console"`.
+- **Info notes:**
+  `div(class = "text-info", style = "font-size: 0.85em; font-style: italic;", bsicons::bs_icon("info-circle"), " ", text)`.
+- **Dark mode:** navbar toggle `input_dark_mode()`. ggplot figures and
+  gt tables are still drawn light only; for a dark version stack two
+  outputs in `.plot-themed` / `.plot-themed-dark` (CSS ready).
+
+## Coding conventions
+
+1.  Prefer tidyverse over base R: `purrr::map*()` / `walk()` over the
+    `apply` family and `for` loops where a functional is natural;
+    `dplyr`, `tidyr`, `stringr` over `subset`, `merge`, `grepl`, `gsub`.
+2.  Helper functions only when a block of 5+ lines is reused more than 4
+    times.
+3.  Code reads chronologically: load → prepare → compute → output, pipes
+    for one transformation, no forward references.
+
+- Namespace-qualify calls
+  ([`dplyr::filter`](https://dplyr.tidyverse.org/reference/filter.html));
+  only `shiny` and `bslib` imported wholesale. `fct_*` for functions,
+  `mod_<name>_UI` / `mod_<name>_server` for modules, `utils_*` for
+  internal helpers. Arguments prefixed with a dot (`.checked_data`,
+  `.n_iter`), native pipe `|>`, `.data$col` inside dplyr,
+  [`rlang::.data`](https://rlang.r-lib.org/reference/dot-data.html)
+  imported.
+- Section outline: main section `##` / `## Title ######` / `##` (3 empty
+  rows before, 1 after); subsection `## + Title ======`; in `fct_*`
+  files numbered steps `## 1. Step ------`.
+- Each `fct_*` function starts with a commented
+  `## !!! FOR TESTING ONLY` block setting its arguments. Flag
+  workarounds with `## !!! TMP !!!`.
+- Log progress with [`message()`](https://rdrr.io/r/base/message.html)
+  (shown in the app consoles).
+- R source files are ASCII: write non-ASCII as escapes (`"é"`, `"©"`).
+  Translated text belongs in `translations.json` (UTF-8).
 
 ## Domain essentials
 
@@ -273,8 +374,6 @@ Owen (2014) *SIAM/ASA JUQ* 2:245–251 · Iooss & Prieur (2019) *IJUQ*
 
 - `inst/extdata/~$test-example2-with-sims.xlsx` is an Excel lock file
   committed by mistake.
-- App footer is placeholder text (“MyApp”, “Your Name”, “XYZ
-  Institute”).
 - [`fct_make_mcs()`](https://gaelso.github.io/mocaredd.dev2/reference/fct_make_mcs.md):
   “beta” uses `.params` only and ignores `.mean`/`.se`; no else branch
   for unsupported PDFs (returns an error on undefined `SIMS`). Output
