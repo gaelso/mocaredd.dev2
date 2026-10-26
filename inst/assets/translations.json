@@ -1,26 +1,180 @@
 {
   "cultural_date_format": "%d-%m-%Y",
-  "languages": ["en", "fr", "sp"],
+  "languages": [
+    "en",
+    "fr",
+    "sp"
+  ],
   "translation": [
     {
-      "en": "Welcome to {mocaredd}",
-      "fr": "Bienvenue dans {mocaredd}",
-      "sp": "Welcome to {mocaredd}"
+      "en": "Monte Carlo Simulations for REDD+ Uncertainty Analysis",
+      "fr": "Simulations de Monte Carlo pour l'analyse d'incertitude REDD+",
+      "sp": "Simulaciones de Monte Carlo para el análisis de incertidumbre REDD+"
     },
     {
-      "en": "I am module 1",
-      "fr": "Je suis le module 1",
-      "sp": "Soy el modulo 1"
+      "en": "Home",
+      "fr": "Accueil",
+      "sp": "Inicio"
     },
     {
-      "en": "I am module 2",
-      "fr": "Je suis le module 2",
-      "sp": "Soy el modulo 2"
+      "en": "Tool",
+      "fr": "Analyser",
+      "sp": "Análisis"
+    },
+    {
+      "en": "About",
+      "fr": "À Propos",
+      "sp": "Acerca De"
+    },
+    {
+      "en": "Reliable uncertainty estimates for REDD+ emission reductions",
+      "fr": "Des estimations d'incertitude fiables pour les réductions d'émissions REDD+",
+      "sp": "Estimaciones de incertidumbre confiables para las reducciones de emisiones REDD+"
+    },
+    {
+      "en": "Organize your activity data and carbon stocks in the {mocaredd} template, run Monte Carlo simulations and get emissions, emission reductions and their confidence intervals.",
+      "fr": "Organisez vos données d'activité et stocks de carbone dans le modèle {mocaredd}, lancez les simulations de Monte Carlo et obtenez les émissions, les réductions d'émissions et leurs intervalles de confiance.",
+      "sp": "Organice sus datos de actividad y reservas de carbono en la plantilla de {mocaredd}, ejecute las simulaciones de Monte Carlo y obtenga las emisiones, las reducciones de emisiones y sus intervalos de confianza."
+    },
+    {
+      "en": "Get Started",
+      "fr": "Commencer",
+      "sp": "Comenzar"
+    },
+    {
+      "en": "An R package and a Shiny app, {mocaredd}, that propagates the uncertainty of activity data and emission factors to REDD+ emissions and emission reductions with Monte Carlo simulations.",
+      "fr": "Un package R et une application Shiny, {mocaredd}, qui propage l'incertitude des données d'activité et des facteurs d'émission aux émissions et réductions d'émissions REDD+ par simulations de Monte Carlo.",
+      "sp": "Un paquete R y una aplicación Shiny, {mocaredd}, que propaga la incertidumbre de los datos de actividad y de los factores de emisión a las emisiones y reducciones de emisiones REDD+ mediante simulaciones de Monte Carlo."
+    },
+    {
+      "en": "For more details about the app development or if any issue, find us on:",
+      "fr": "Pour plus de détails sur le développement de l'application ou en cas de problème, retrouvez-nous sur :",
+      "sp": "Para más detalles sobre el desarrollo de la aplicación o en caso de problema, encuéntrenos en:"
+    },
+    {
+      "en": "Start with your data in the Tool section!",
+      "fr": "Commencez avec vos données dans la section Analyser !",
+      "sp": "¡Comience con sus datos en la sección Análisis!"
+    },
+    {
+      "en": "The template",
+      "fr": "Le modèle",
+      "sp": "La plantilla"
+    },
+    {
+      "en": "{mocaredd} works with an Excel template that organizes the inputs of REDD+ carbon accounting.",
+      "fr": "{mocaredd} fonctionne avec un modèle Excel qui organise les données de la comptabilité carbone REDD+.",
+      "sp": "{mocaredd} funciona con una plantilla Excel que organiza los datos de la contabilidad de carbono REDD+."
+    },
+    {
+      "en": "Time periods, land use transition areas (activity data) and carbon stocks per land use, each with its uncertainty and probability distribution.",
+      "fr": "Périodes, superficies des transitions d'utilisation des terres (données d'activité) et stocks de carbone par utilisation des terres, chacun avec son incertitude et sa loi de probabilité.",
+      "sp": "Periodos, superficies de las transiciones de uso de la tierra (datos de actividad) y reservas de carbono por uso de la tierra, cada uno con su incertidumbre y su distribución de probabilidad."
+    },
+    {
+      "en": "Download the templates and examples in the Tool section, or the demo dataset in the About section.",
+      "fr": "Téléchargez les modèles et exemples dans la section Analyser, ou le jeu de données de démonstration dans la section À Propos.",
+      "sp": "Descargue las plantillas y ejemplos en la sección Análisis, o el conjunto de datos de demostración en la sección Acerca De."
+    },
+    {
+      "en": "Need help?",
+      "fr": "Besoin d’aide ?",
+      "sp": "¿Necesita ayuda?"
+    },
+    {
+      "en": "Examples and resources help you prepare your data and read the results.",
+      "fr": "Des exemples et ressources vous aident à préparer vos données et à interpréter les résultats.",
+      "sp": "Ejemplos y recursos le ayudan a preparar sus datos e interpretar los resultados."
+    },
+    {
+      "en": "The About section describes the workflow, the methods, a demo dataset and the package documentation.",
+      "fr": "La section À Propos présente le processus, les méthodes, un jeu de données de démonstration et la documentation du package.",
+      "sp": "La sección Acerca De describe el flujo de trabajo, los métodos, un conjunto de datos de demostración y la documentación del paquete."
+    },
+    {
+      "en": "For more information, go to:",
+      "fr": "Pour plus d’informations, rendez-vous sur :",
+      "sp": "Para más información, vaya a:"
+    },
+    {
+      "en": "Upload your data",
+      "fr": "Chargez vos données",
+      "sp": "Cargue sus datos"
+    },
+    {
+      "en": "{mocaredd} only accepts XLSX files that follow a specific template. Download the template here if you haven't converted your data yet.",
+      "fr": "{mocaredd} n'accepte que des fichiers XLSX qui suivent un modèle spécifique. Téléchargez le modèle ici si vous n'avez pas encore converti vos données.",
+      "sp": "{mocaredd} solo acepta archivos XLSX que siguen una plantilla específica. Descargue la plantilla aquí si aún no ha convertido sus datos."
+    },
+    {
+      "en": "v2 simple",
+      "fr": "v2 simple",
+      "sp": "v2 simple"
+    },
+    {
+      "en": "v2 intermediate",
+      "fr": "v2 intermédiaire",
+      "sp": "v2 intermedia"
+    },
+    {
+      "en": "(legacy) v1 simple",
+      "fr": "(ancien) v1 simple",
+      "sp": "(antigua) v1 simple"
+    },
+    {
+      "en": "Once your data has been converted to the app's template, upload it here:",
+      "fr": "Une fois vos données converties au modèle de l'application, chargez-les ici :",
+      "sp": "Una vez convertidos sus datos a la plantilla de la aplicación, cárguelos aquí:"
+    },
+    {
+      "en": "No data uploaded.",
+      "fr": "Aucune donnée chargée.",
+      "sp": "No se han cargado datos."
+    },
+    {
+      "en": "Data uploaded with correct tabs.",
+      "fr": "Données chargées avec les bons onglets.",
+      "sp": "Datos cargados con las pestañas correctas."
+    },
+    {
+      "en": "Data uploaded with incorrect tabs.",
+      "fr": "Données chargées avec des onglets incorrects.",
+      "sp": "Datos cargados con pestañas incorrectas."
+    },
+    {
+      "en": "Run checks",
+      "fr": "Lancer les vérifications",
+      "sp": "Ejecutar las verificaciones"
+    },
+    {
+      "en": "Create Monte Carlo Simulations",
+      "fr": "Créer les simulations de Monte Carlo",
+      "sp": "Crear las simulaciones de Monte Carlo"
     },
     {
       "en": "Run checks first.",
       "fr": "Lancez d'abord les vérifications.",
       "sp": "Ejecute primero las verificaciones."
+    },
+    {
+      "en": "All checks passed.",
+      "fr": "Toutes les vérifications sont réussies.",
+      "sp": "Todas las verificaciones son correctas."
+    },
+    {
+      "en": "Checks not passed.",
+      "fr": "Vérifications non réussies.",
+      "sp": "Verificaciones no superadas."
+    },
+    {
+      "en": "Run simulations",
+      "fr": "Lancer les simulations",
+      "sp": "Ejecutar las simulaciones"
+    },
+    {
+      "en": "Perform sensitivity analysis",
+      "fr": "Analyse de sensibilité",
+      "sp": "Análisis de sensibilidad"
     },
     {
       "en": "Uses the means and standard errors of the inputs, no simulations needed.",
@@ -31,6 +185,301 @@
       "en": "Run sensitivity analysis",
       "fr": "Lancer l'analyse de sensibilité",
       "sp": "Ejecutar el análisis de sensibilidad"
+    },
+    {
+      "en": "Check your data",
+      "fr": "Vérifiez vos données",
+      "sp": "Verifique sus datos"
+    },
+    {
+      "en": "Results",
+      "fr": "Résultats",
+      "sp": "Resultados"
+    },
+    {
+      "en": "Sensitivity",
+      "fr": "Sensibilité",
+      "sp": "Sensibilidad"
+    },
+    {
+      "en": " Start with uploading your data in the sidebar.",
+      "fr": " Commencez par charger vos données dans le panneau latéral.",
+      "sp": " Comience cargando sus datos en el panel lateral."
+    },
+    {
+      "en": "Checking data",
+      "fr": "Vérification des données",
+      "sp": "Verificación de los datos"
+    },
+    {
+      "en": "Starting checks...",
+      "fr": "Début des vérifications...",
+      "sp": "Inicio de las verificaciones..."
+    },
+    {
+      "en": "Show check results",
+      "fr": "Afficher les résultats des vérifications",
+      "sp": "Mostrar los resultados de las verificaciones"
+    },
+    {
+      "en": "Time periods",
+      "fr": "Périodes",
+      "sp": "Periodos"
+    },
+    {
+      "en": "reporting periods",
+      "fr": "périodes de rapport",
+      "sp": "periodos de reporte"
+    },
+    {
+      "en": "for reference",
+      "fr": "de référence",
+      "sp": "de referencia"
+    },
+    {
+      "en": "for monitoring",
+      "fr": "de suivi",
+      "sp": "de monitoreo"
+    },
+    {
+      "en": "Land use transitions",
+      "fr": "Transitions d'utilisation des terres",
+      "sp": "Transiciones de uso de la tierra"
+    },
+    {
+      "en": "land use transitions",
+      "fr": "transitions d'utilisation des terres",
+      "sp": "transiciones de uso de la tierra"
+    },
+    {
+      "en": "land use categories",
+      "fr": "catégories d'utilisation des terres",
+      "sp": "categorías de uso de la tierra"
+    },
+    {
+      "en": "REDD+ activities:",
+      "fr": "activités REDD+ :",
+      "sp": "actividades REDD+:"
+    },
+    {
+      "en": "Carbon stock",
+      "fr": "Stock de carbone",
+      "sp": "Reservas de carbono"
+    },
+    {
+      "en": "Carbon pools",
+      "fr": "réservoirs de carbone",
+      "sp": "depósitos de carbono"
+    },
+    {
+      "en": "Degradation ratio applied to",
+      "fr": "Taux de dégradation appliqué à",
+      "sp": "Tasa de degradación aplicada a"
+    },
+    {
+      "en": "Carbon stock difference",
+      "fr": "Différence de stocks de carbone",
+      "sp": "Diferencia de reservas de carbono"
+    },
+    {
+      "en": "Arithmetic mean emissions and reductions (tCO2e/yr)",
+      "fr": "Émissions et réductions, moyennes arithmétiques (tCO2e/an)",
+      "sp": "Emisiones y reducciones, medias aritméticas (tCO2e/año)"
+    },
+    {
+      "en": "Arithmetic mean emission reductions per period (tCO2e/y)",
+      "fr": "Réductions d'émissions par période, moyennes arithmétiques (tCO2e/an)",
+      "sp": "Reducciones de emisiones por periodo, medias aritméticas (tCO2e/año)"
+    },
+    {
+      "en": "Land use change matrix",
+      "fr": "Matrice de changement d'utilisation des terres",
+      "sp": "Matriz de cambio de uso de la tierra"
+    },
+    {
+      "en": "Emissions (tCO2e/yr)",
+      "fr": "Émissions (tCO2e/an)",
+      "sp": "Emisiones (tCO2e/año)"
+    },
+    {
+      "en": "Years",
+      "fr": "Années",
+      "sp": "Años"
+    },
+    {
+      "en": "Deforestation",
+      "fr": "Déforestation",
+      "sp": "Deforestación"
+    },
+    {
+      "en": "Degradation",
+      "fr": "Dégradation",
+      "sp": "Degradación"
+    },
+    {
+      "en": "Total",
+      "fr": "Total",
+      "sp": "Total"
+    },
+    {
+      "en": "Emissions by time period",
+      "fr": "Émissions par période",
+      "sp": "Emisiones por periodo"
+    },
+    {
+      "en": "Reference, monitoring & emission reductions",
+      "fr": "Référence, suivi et réductions d'émissions",
+      "sp": "Referencia, monitoreo y reducciones de emisiones"
+    },
+    {
+      "en": "No period",
+      "fr": "Sans période",
+      "sp": "Sin periodo"
+    },
+    {
+      "en": "Reference level",
+      "fr": "Niveau de référence",
+      "sp": "Nivel de referencia"
+    },
+    {
+      "en": "Emissions",
+      "fr": "Émissions",
+      "sp": "Emisiones"
+    },
+    {
+      "en": "Reduction",
+      "fr": "Réduction",
+      "sp": "Reducción"
+    },
+    {
+      "en": "Select a time period",
+      "fr": "Choisir une période",
+      "sp": "Seleccione un periodo"
+    },
+    {
+      "en": "Area (ha)",
+      "fr": "Superficie (ha)",
+      "sp": "Superficie (ha)"
+    },
+    {
+      "en": "Initial land use",
+      "fr": "Utilisation initiale des terres",
+      "sp": "Uso inicial de la tierra"
+    },
+    {
+      "en": "Final land use",
+      "fr": "Utilisation finale des terres",
+      "sp": "Uso final de la tierra"
+    },
+    {
+      "en": " Run simulations in the sidebar.",
+      "fr": " Lancez les simulations dans le panneau latéral.",
+      "sp": " Ejecute las simulaciones en el panel lateral."
+    },
+    {
+      "en": "Simulations progress",
+      "fr": "Avancement des simulations",
+      "sp": "Progreso de las simulaciones"
+    },
+    {
+      "en": "Set seed for random simulations...",
+      "fr": "Initialisation du générateur aléatoire...",
+      "sp": "Inicialización del generador aleatorio..."
+    },
+    {
+      "en": "Simulate emissions for each land use transition...",
+      "fr": "Simulation des émissions par transition d'utilisation des terres...",
+      "sp": "Simulación de las emisiones por transición de uso de la tierra..."
+    },
+    {
+      "en": "Calculate Emission Reductions...",
+      "fr": "Calcul des réductions d'émissions...",
+      "sp": "Cálculo de las reducciones de emisiones..."
+    },
+    {
+      "en": "Get medians and confidence intervals...",
+      "fr": "Calcul des médianes et intervalles de confiance...",
+      "sp": "Cálculo de las medianas e intervalos de confianza..."
+    },
+    {
+      "en": "Prepare outputs...",
+      "fr": "Préparation des résultats...",
+      "sp": "Preparación de los resultados..."
+    },
+    {
+      "en": "All steps completed!",
+      "fr": "Toutes les étapes sont terminées !",
+      "sp": "¡Todos los pasos completados!"
+    },
+    {
+      "en": "Show simulation results",
+      "fr": "Afficher les résultats des simulations",
+      "sp": "Mostrar los resultados de las simulaciones"
+    },
+    {
+      "en": "Download the simulations and aggregated results",
+      "fr": "Télécharger les simulations et les résultats agrégés",
+      "sp": "Descargar las simulaciones y los resultados agregados"
+    },
+    {
+      "en": "Download the arithmetic mean ERs",
+      "fr": "Télécharger les RE en moyennes arithmétiques",
+      "sp": "Descargar las RE en medias aritméticas"
+    },
+    {
+      "en": "Download the simulated ERs",
+      "fr": "Télécharger les RE simulées",
+      "sp": "Descargar las RE simuladas"
+    },
+    {
+      "en": "Download all the ER simulations",
+      "fr": "Télécharger toutes les simulations de RE",
+      "sp": "Descargar todas las simulaciones de RE"
+    },
+    {
+      "en": "Download all the land use transition simulations",
+      "fr": "Télécharger toutes les simulations par transition d'utilisation des terres",
+      "sp": "Descargar todas las simulaciones por transición de uso de la tierra"
+    },
+    {
+      "en": "Land use transition",
+      "fr": "Transition d'utilisation des terres",
+      "sp": "Transición de uso de la tierra"
+    },
+    {
+      "en": "REDD+ activities",
+      "fr": "Activités REDD+",
+      "sp": "Actividades REDD+"
+    },
+    {
+      "en": "Select a period",
+      "fr": "Choisir une période",
+      "sp": "Seleccione un periodo"
+    },
+    {
+      "en": "Select a REDD+ activity",
+      "fr": "Choisir une activité REDD+",
+      "sp": "Seleccione una actividad REDD+"
+    },
+    {
+      "en": "Emission reductions details",
+      "fr": "Détails des réductions d'émissions",
+      "sp": "Detalles de las reducciones de emisiones"
+    },
+    {
+      "en": "Emission reductions histogram",
+      "fr": "Histogramme des réductions d'émissions",
+      "sp": "Histograma de las reducciones de emisiones"
+    },
+    {
+      "en": "REDD+ Activity details",
+      "fr": "Détails par activité REDD+",
+      "sp": "Detalles por actividad REDD+"
+    },
+    {
+      "en": "REDD+ activity histograms",
+      "fr": "Histogrammes par activité REDD+",
+      "sp": "Histogramas por actividad REDD+"
     },
     {
       "en": " Run the sensitivity analysis in the sidebar.",
@@ -86,6 +535,411 @@
       "en": "Run simulations to see the details per land use transition.",
       "fr": "Lancez les simulations pour voir les détails par transition d'utilisation des terres.",
       "sp": "Ejecute las simulaciones para ver los detalles por transición de uso de la tierra."
+    },
+    {
+      "en": "Sensitivity analysis failed:",
+      "fr": "L'analyse de sensibilité a échoué :",
+      "sp": "El análisis de sensibilidad falló:"
+    },
+    {
+      "en": "About {mocaredd}",
+      "fr": "À propos de {mocaredd}",
+      "sp": "Acerca de {mocaredd}"
+    },
+    {
+      "en": "{mocaredd} propagates the uncertainty of REDD+ inputs to emissions and emission reductions with Monte Carlo simulations, the approach required by results-based payment programmes such as the FCPF Carbon Fund and ART-TREES.",
+      "fr": "{mocaredd} propage l'incertitude des données REDD+ aux émissions et réductions d'émissions par simulations de Monte Carlo, l'approche requise par les programmes de paiements basés sur les résultats tels que le Fonds carbone du FCPF et ART-TREES.",
+      "sp": "{mocaredd} propaga la incertidumbre de los datos REDD+ a las emisiones y reducciones de emisiones mediante simulaciones de Monte Carlo, el enfoque requerido por los programas de pagos basados en resultados como el Fondo del Carbono del FCPF y ART-TREES."
+    },
+    {
+      "en": "How it works",
+      "fr": "Fonctionnement",
+      "sp": "Cómo funciona"
+    },
+    {
+      "en": "{mocaredd} covers the last two steps of a four-step workflow. The first two steps take place in the national forest monitoring system.",
+      "fr": "{mocaredd} couvre les deux dernières étapes d'un processus en quatre étapes. Les deux premières ont lieu dans le système national de surveillance des forêts.",
+      "sp": "{mocaredd} cubre los dos últimos pasos de un flujo de trabajo de cuatro pasos. Los dos primeros tienen lugar en el sistema nacional de monitoreo forestal."
+    },
+    {
+      "en": "Gather the inputs",
+      "fr": "Rassembler les données",
+      "sp": "Reunir los datos"
+    },
+    {
+      "en": "Compile the activity data (areas of land use transitions) and the carbon stocks of each land use, with their standard errors and probability distributions.",
+      "fr": "Compilez les données d'activité (superficies des transitions d'utilisation des terres) et les stocks de carbone de chaque utilisation des terres, avec leurs erreurs standard et lois de probabilité.",
+      "sp": "Compile los datos de actividad (superficies de las transiciones de uso de la tierra) y las reservas de carbono de cada uso de la tierra, con sus errores estándar y distribuciones de probabilidad."
+    },
+    {
+      "en": "Fill in the template",
+      "fr": "Remplir le modèle",
+      "sp": "Completar la plantilla"
+    },
+    {
+      "en": "Enter the settings, time periods, activity data and carbon stocks in the {mocaredd} Excel template, one sheet per table.",
+      "fr": "Saisissez les paramètres, périodes, données d'activité et stocks de carbone dans le modèle Excel {mocaredd}, une feuille par tableau.",
+      "sp": "Ingrese los parámetros, periodos, datos de actividad y reservas de carbono en la plantilla Excel de {mocaredd}, una hoja por tabla."
+    },
+    {
+      "en": "Check the data",
+      "fr": "Vérifier les données",
+      "sp": "Verificar los datos"
+    },
+    {
+      "en": "Upload the template. The app checks its structure and values, and calculates emissions and emission reductions from the means, with IPCC Approach 1 uncertainty.",
+      "fr": "Chargez le modèle. L'application vérifie sa structure et ses valeurs, et calcule les émissions et réductions d'émissions à partir des moyennes, avec l'incertitude de l'approche 1 du GIEC.",
+      "sp": "Cargue la plantilla. La aplicación verifica su estructura y sus valores, y calcula las emisiones y reducciones de emisiones a partir de las medias, con la incertidumbre del enfoque 1 del IPCC."
+    },
+    {
+      "en": "Simulate and analyse",
+      "fr": "Simuler et analyser",
+      "sp": "Simular y analizar"
+    },
+    {
+      "en": "Run the Monte Carlo simulations (IPCC Approach 2), review emission reductions and their confidence intervals, find the inputs that drive the uncertainty and export the results.",
+      "fr": "Lancez les simulations de Monte Carlo (approche 2 du GIEC), examinez les réductions d'émissions et leurs intervalles de confiance, identifiez les données qui déterminent l'incertitude et exportez les résultats.",
+      "sp": "Ejecute las simulaciones de Monte Carlo (enfoque 2 del IPCC), revise las reducciones de emisiones y sus intervalos de confianza, identifique los datos que determinan la incertidumbre y exporte los resultados."
+    },
+    {
+      "en": "Workflow in detail",
+      "fr": "Le processus en détail",
+      "sp": "El flujo de trabajo en detalle"
+    },
+    {
+      "en": "National forest monitoring system",
+      "fr": "Système national de surveillance des forêts",
+      "sp": "Sistema nacional de monitoreo forestal"
+    },
+    {
+      "en": "XLSX template",
+      "fr": "Modèle XLSX",
+      "sp": "Plantilla XLSX"
+    },
+    {
+      "en": "Load and check",
+      "fr": "Charger et vérifier",
+      "sp": "Cargar y verificar"
+    },
+    {
+      "en": "Arithmetic means (Approach 1)",
+      "fr": "Moyennes arithmétiques (approche 1)",
+      "sp": "Medias aritméticas (enfoque 1)"
+    },
+    {
+      "en": "Monte Carlo simulations (Approach 2)",
+      "fr": "Simulations de Monte Carlo (approche 2)",
+      "sp": "Simulaciones de Monte Carlo (enfoque 2)"
+    },
+    {
+      "en": "Sensitivity analysis",
+      "fr": "Analyse de sensibilité",
+      "sp": "Análisis de sensibilidad"
+    },
+    {
+      "en": "Review and export",
+      "fr": "Examiner et exporter",
+      "sp": "Revisar y exportar"
+    },
+    {
+      "en": "Detailed workflow",
+      "fr": "Processus détaillé",
+      "sp": "Flujo de trabajo detallado"
+    },
+    {
+      "en": "Documentation",
+      "fr": "Documentation",
+      "sp": "Documentación"
+    },
+    {
+      "en": "Context",
+      "fr": "Contexte",
+      "sp": "Contexto"
+    },
+    {
+      "en": "REDD+ is a framework under the United Nations Framework Convention on Climate Change (UNFCCC) to reduce emissions from deforestation and forest degradation, and to conserve, sustainably manage and enhance forest carbon stocks in developing countries. Countries report their results against a forest reference emission level.",
+      "fr": "REDD+ est un cadre de la Convention-cadre des Nations Unies sur les changements climatiques (CCNUCC) visant à réduire les émissions dues à la déforestation et à la dégradation des forêts, et à conserver, gérer durablement et accroître les stocks de carbone forestier dans les pays en développement. Les pays rendent compte de leurs résultats par rapport à un niveau d'émissions de référence pour les forêts.",
+      "sp": "REDD+ es un marco de la Convención Marco de las Naciones Unidas sobre el Cambio Climático (CMNUCC) para reducir las emisiones derivadas de la deforestación y la degradación forestal, y para conservar, gestionar de forma sostenible e incrementar las reservas forestales de carbono en los países en desarrollo. Los países informan sus resultados con respecto a un nivel de referencia de emisiones forestales."
+    },
+    {
+      "en": "Uncertainty analysis",
+      "fr": "Analyse d'incertitude",
+      "sp": "Análisis de incertidumbre"
+    },
+    {
+      "en": "The IPCC guidelines describe two approaches to combine uncertainties: error propagation (Approach 1) and Monte Carlo simulations (Approach 2). Monte Carlo simulations handle large uncertainties, non-normal distributions and inputs shared between estimates, such as carbon stocks used in both the reference and monitoring periods.",
+      "fr": "Les lignes directrices du GIEC décrivent deux approches pour combiner les incertitudes : la propagation des erreurs (approche 1) et les simulations de Monte Carlo (approche 2). Les simulations de Monte Carlo traitent les incertitudes élevées, les lois non normales et les données communes à plusieurs estimations, comme les stocks de carbone utilisés pour les périodes de référence et de suivi.",
+      "sp": "Las directrices del IPCC describen dos enfoques para combinar incertidumbres: la propagación de errores (enfoque 1) y las simulaciones de Monte Carlo (enfoque 2). Las simulaciones de Monte Carlo manejan incertidumbres grandes, distribuciones no normales y datos compartidos entre estimaciones, como las reservas de carbono usadas en los periodos de referencia y de monitoreo."
+    },
+    {
+      "en": "{mocaredd} makes Monte Carlo uncertainty analysis accessible to national REDD+ teams: no coding, a standard template and outputs ready for reporting. It also shows how each input contributes to the uncertainty of the results.",
+      "fr": "{mocaredd} rend l'analyse d'incertitude par Monte Carlo accessible aux équipes nationales REDD+ : sans programmation, avec un modèle standard et des résultats prêts pour les rapports. Il montre aussi la contribution de chaque donnée à l'incertitude des résultats.",
+      "sp": "{mocaredd} hace accesible el análisis de incertidumbre por Monte Carlo a los equipos nacionales de REDD+: sin programación, con una plantilla estándar y resultados listos para los informes. También muestra la contribución de cada dato a la incertidumbre de los resultados."
+    },
+    {
+      "en": "Source code on GitHub",
+      "fr": "Code source sur GitHub",
+      "sp": "Código fuente en GitHub"
+    },
+    {
+      "en": "Demo dataset",
+      "fr": "Jeu de données de démonstration",
+      "sp": "Conjunto de datos de demostración"
+    },
+    {
+      "en": "Use the demo dataset to try the tool before working with your own data. It is the simple version of the {mocaredd} template: two forest types, deforestation and forest degradation, one reference and one monitoring period.",
+      "fr": "Utilisez le jeu de données de démonstration pour essayer l'outil avant de travailler avec vos propres données. C'est la version simple du modèle {mocaredd} : deux types de forêt, déforestation et dégradation des forêts, une période de référence et une période de suivi.",
+      "sp": "Use el conjunto de datos de demostración para probar la herramienta antes de trabajar con sus propios datos. Es la versión simple de la plantilla de {mocaredd}: dos tipos de bosque, deforestación y degradación forestal, un periodo de referencia y uno de monitoreo."
+    },
+    {
+      "en": "How to use it",
+      "fr": "Mode d'emploi",
+      "sp": "Cómo usarlo"
+    },
+    {
+      "en": "Download the demo dataset.",
+      "fr": "Téléchargez le jeu de données de démonstration.",
+      "sp": "Descargue el conjunto de datos de demostración."
+    },
+    {
+      "en": "Open the Tool page, upload the XLSX file in step 1, Upload your data, then select Run checks.",
+      "fr": "Ouvrez la page Analyser, chargez le fichier XLSX à l'étape 1, Chargez vos données, puis sélectionnez Lancer les vérifications.",
+      "sp": "Abra la página Análisis, cargue el archivo XLSX en el paso 1, Cargue sus datos, y luego seleccione Ejecutar las verificaciones."
+    },
+    {
+      "en": "Run the simulations and the sensitivity analysis in steps 2 and 3.",
+      "fr": "Lancez les simulations et l'analyse de sensibilité aux étapes 2 et 3.",
+      "sp": "Ejecute las simulaciones y el análisis de sensibilidad en los pasos 2 y 3."
+    },
+    {
+      "en": "Download demo dataset",
+      "fr": "Télécharger les données de démonstration",
+      "sp": "Descargar los datos de demostración"
+    },
+    {
+      "en": "Template",
+      "fr": "Modèle",
+      "sp": "Plantilla"
+    },
+    {
+      "en": "Version 2, simple",
+      "fr": "Version 2, simple",
+      "sp": "Versión 2, simple"
+    },
+    {
+      "en": "Reference 2016-2020, monitoring 2021-2022",
+      "fr": "Référence 2016-2020, suivi 2021-2022",
+      "sp": "Referencia 2016-2020, monitoreo 2021-2022"
+    },
+    {
+      "en": "Activity data",
+      "fr": "Données d'activité",
+      "sp": "Datos de actividad"
+    },
+    {
+      "en": "12 land use transitions, 6 per period",
+      "fr": "12 transitions d'utilisation des terres, 6 par période",
+      "sp": "12 transiciones de uso de la tierra, 6 por periodo"
+    },
+    {
+      "en": "Land uses",
+      "fr": "Utilisations des terres",
+      "sp": "Usos de la tierra"
+    },
+    {
+      "en": "Evergreen and mountain forests, intact and degraded, cropland",
+      "fr": "Forêts sempervirentes et de montagne, intactes et dégradées, terres cultivées",
+      "sp": "Bosques siempreverdes y de montaña, intactos y degradados, tierras de cultivo"
+    },
+    {
+      "en": "Deforestation, forest degradation",
+      "fr": "Déforestation, dégradation des forêts",
+      "sp": "Deforestación, degradación forestal"
+    },
+    {
+      "en": "Carbon stocks",
+      "fr": "Stocks de carbone",
+      "sp": "Reservas de carbono"
+    },
+    {
+      "en": "Aboveground biomass and root-to-shoot ratio in dry matter, carbon fraction, degradation ratios",
+      "fr": "Biomasse aérienne et rapport racines/tiges en matière sèche, fraction de carbone, taux de dégradation",
+      "sp": "Biomasa aérea y relación raíz/tallo en materia seca, fracción de carbono, tasas de degradación"
+    },
+    {
+      "en": "Simulations",
+      "fr": "Simulations",
+      "sp": "Simulaciones"
+    },
+    {
+      "en": "10,000 iterations, 90% confidence level",
+      "fr": "10 000 itérations, niveau de confiance de 90 %",
+      "sp": "10 000 iteraciones, nivel de confianza del 90 %"
+    },
+    {
+      "en": "Data overview",
+      "fr": "Aperçu des données",
+      "sp": "Vista general de los datos"
+    },
+    {
+      "en": "Under the hood",
+      "fr": "Sous le capot",
+      "sp": "Bajo el capó"
+    },
+    {
+      "en": "Package",
+      "fr": "Package",
+      "sp": "Paquete"
+    },
+    {
+      "en": "Version",
+      "fr": "Version",
+      "sp": "Versión"
+    },
+    {
+      "en": "Licence",
+      "fr": "Licence",
+      "sp": "Licencia"
+    },
+    {
+      "en": "Authors",
+      "fr": "Auteurs",
+      "sp": "Autores"
+    },
+    {
+      "en": "maintainer",
+      "fr": "responsable",
+      "sp": "responsable"
+    },
+    {
+      "en": "Source code",
+      "fr": "Code source",
+      "sp": "Código fuente"
+    },
+    {
+      "en": "Install and run {mocaredd} in R (recommended):",
+      "fr": "Installer et lancer {mocaredd} dans R (recommandé) :",
+      "sp": "Instalar y ejecutar {mocaredd} en R (recomendado):"
+    },
+    {
+      "en": "Open the online version",
+      "fr": "Ouvrir la version en ligne",
+      "sp": "Abrir la versión en línea"
+    },
+    {
+      "en": "Dependencies",
+      "fr": "Dépendances",
+      "sp": "Dependencias"
+    },
+    {
+      "en": "{mocaredd} is an R package built with Shiny. It relies on the following packages.",
+      "fr": "{mocaredd} est un package R construit avec Shiny. Il repose sur les packages suivants.",
+      "sp": "{mocaredd} es un paquete R construido con Shiny. Se basa en los siguientes paquetes."
+    },
+    {
+      "en": "Interface",
+      "fr": "Interface",
+      "sp": "Interfaz"
+    },
+    {
+      "en": "Data preparation",
+      "fr": "Préparation des données",
+      "sp": "Preparación de los datos"
+    },
+    {
+      "en": "Simulations and statistics",
+      "fr": "Simulations et statistiques",
+      "sp": "Simulaciones y estadísticas"
+    },
+    {
+      "en": "Figures and tables",
+      "fr": "Graphiques et tableaux",
+      "sp": "Gráficos y tablas"
+    },
+    {
+      "en": "Use cases and stories",
+      "fr": "Cas d'utilisation et témoignages",
+      "sp": "Casos de uso e historias"
+    },
+    {
+      "en": "Coming soon.",
+      "fr": "Bientôt disponible.",
+      "sp": "Próximamente."
+    },
+    {
+      "en": "Latest developments",
+      "fr": "Derniers développements",
+      "sp": "Últimas novedades"
+    },
+    {
+      "en": "In the pipeline",
+      "fr": "En préparation",
+      "sp": "En preparación"
+    },
+    {
+      "en": "Step-by-step IPCC Approach 1 uncertainty in the Tool section.",
+      "fr": "Incertitude de l'approche 1 du GIEC étape par étape dans la section Analyser.",
+      "sp": "Incertidumbre del enfoque 1 del IPCC paso a paso en la sección Análisis."
+    },
+    {
+      "en": "Variance-based (Shapley) sensitivity analysis.",
+      "fr": "Analyse de sensibilité basée sur la variance (Shapley).",
+      "sp": "Análisis de sensibilidad basado en la varianza (Shapley)."
+    },
+    {
+      "en": "October 2026",
+      "fr": "Octobre 2026",
+      "sp": "Octubre de 2026"
+    },
+    {
+      "en": "Sensitivity analysis in the Tool section: contribution of activity data and emission factors to the uncertainty, and tornado chart of the activity data sources.",
+      "fr": "Analyse de sensibilité dans la section Analyser : contribution des données d'activité et des facteurs d'émission à l'incertitude, et diagramme en tornade des sources de données d'activité.",
+      "sp": "Análisis de sensibilidad en la sección Análisis: contribución de los datos de actividad y de los factores de emisión a la incertidumbre, y gráfico de tornado de las fuentes de datos de actividad."
+    },
+    {
+      "en": "Carbon stock formulas with biomass written as AGB * (1 + RS) * CF, and support for more carbon pools.",
+      "fr": "Formules de stock de carbone avec la biomasse écrite AGB * (1 + RS) * CF, et prise en charge de nouveaux réservoirs de carbone.",
+      "sp": "Fórmulas de reservas de carbono con la biomasa escrita como AGB * (1 + RS) * CF, y soporte para más depósitos de carbono."
+    },
+    {
+      "en": "New design following the FAO branding guidelines: header, footer, home and About pages, light and dark modes.",
+      "fr": "Nouveau design conforme à la charte graphique de la FAO : en-tête, pied de page, pages d'accueil et À Propos, modes clair et sombre.",
+      "sp": "Nuevo diseño conforme a las directrices de imagen de la FAO: encabezado, pie de página, páginas de inicio y Acerca De, modos claro y oscuro."
+    },
+    {
+      "en": "Contact us",
+      "fr": "Contactez-nous",
+      "sp": "Contacto"
+    },
+    {
+      "en": "Terms and Conditions",
+      "fr": "Termes et conditions",
+      "sp": "Términos y condiciones"
+    },
+    {
+      "en": "Data protection and privacy",
+      "fr": "Protection et confidentialité des données",
+      "sp": "Protección de datos y privacidad"
+    },
+    {
+      "en": "Scam Alert",
+      "fr": "Alerte aux messages frauduleux",
+      "sp": "Alerta de estafa"
+    },
+    {
+      "en": "Report Misconduct",
+      "fr": "Signaler un cas de mauvaise conduite",
+      "sp": "Reportar mala conducta"
+    },
+    {
+      "en": "Transparency and accountability",
+      "fr": "Transparence et redevabilité",
+      "sp": "Transparencia y rendición de cuentas"
+    },
+    {
+      "en": "Developed with the support of",
+      "fr": "Développé avec le soutien de",
+      "sp": "Desarrollado con el apoyo de"
     }
-   ]
+  ]
 }
