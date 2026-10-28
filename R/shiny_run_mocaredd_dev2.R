@@ -97,7 +97,8 @@ shiny_run_mocaredd_dev2 <- function(...) {
 
   ## App title: FAO logo top left (48 px logo, 12 px clear space above and below), not a
   ## link (the FAO logo is not the app logo), then the app title on two lines ({mocaredd},
-  ## then the description), a link to the home page without link styling, hidden on small screens
+  ## then the description), a link to the home page without link styling. The description is
+  ## hidden below 992 px, the name only on very small screens (assets/style.css)
   ## (as function because i18n$t() needs to be inside page_navbar())
   app_title <- function() {
     div(
@@ -105,9 +106,9 @@ shiny_run_mocaredd_dev2 <- function(...) {
       tags$span(class = "header-logo-block", logo_imgs),
       tags$a(
         href = "./", ## Send back to home page
-        class = "app-title d-none d-lg-flex", ## hidden below 992 px
+        class = "app-title",
         tags$span(class = "app-name", "{mocaredd}"),
-        tags$span(class = "app-subtitle", i18n$t(.tr$app_title))
+        tags$span(class = "app-subtitle d-none d-lg-inline", i18n$t(.tr$app_title)) ## hidden below 992 px
       )
     )
   }

@@ -292,6 +292,7 @@ body > .container-fluid {
 /* App name after the logo, separated by a vertical rule; a link to the home page
    that keeps the title look (navbar text colour), no hover effect */
 .app-title {
+  display: flex;
   flex-direction: column;
   border-left: 1px solid var(--bs-border-color);
   padding-left: 1rem;
@@ -312,6 +313,23 @@ body > .container-fluid {
 .app-title:hover {
   color: inherit;
   text-decoration: none;
+}
+
+/* Below 992 px only the name shows (description hidden in R/shiny_run_mocaredd_dev2.R);
+   on phones it is tighter, and it goes when it no longer fits next to the logo and
+   the menu button (logo clear space unchanged) */
+@media (max-width: 575.98px) {
+  .app-title {
+    padding-left: 0.6rem;
+  }
+  .app-name {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 387.98px) {
+  .app-title {
+    display: none;
+  }
 }
 
 /* Small screens: the logo stays top left, the menu button goes to the right */
