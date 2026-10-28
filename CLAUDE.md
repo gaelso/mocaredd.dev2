@@ -147,7 +147,9 @@ them out of the repo and never quote them in code, comments or docs.
   codes.
 - **Header:** official FAO 3-line English logo, 48 px, top left, not a
   link, light/dark files swapped by CSS; then the two-line title linking
-  home (`{mocaredd}` over `.tr$app_title`). Fixed 72 px navbar,
+  home (`{mocaredd}` over `.tr$app_title`). The subtitle hides below 992
+  px; `{mocaredd}` stays (tighter below 576 px) and hides below 388 px,
+  where it no longer fits beside the menu button. Fixed 72 px navbar,
   `navbar-expand-xl`. Files in `inst/assets/branding/` are used
   unmodified.
 - **Footer:** `app_footer()`: Global Goals icons (60 px), six fao.org

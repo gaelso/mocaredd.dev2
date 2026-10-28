@@ -92,7 +92,7 @@
 <li>
 <strong>Colours, one source:</strong> <code>app_colors</code> (light/dark) in <code>R/shiny_run_mocaredd_dev2.R</code>. Each entry becomes a CSS variable <code>--app-&lt;name&gt;</code> for <code>:root</code> and <code>[data-bs-theme=dark]</code>; light values also feed <code>bs_theme()</code>. In <code>style.css</code> use these variables, not hex codes.</li>
 <li>
-<strong>Header:</strong> official FAO 3-line English logo, 48 px, top left, not a link, light/dark files swapped by CSS; then the two-line title linking home (<code>{mocaredd}</code> over <code>.tr$app_title</code>). Fixed 72 px navbar, <code>navbar-expand-xl</code>. Files in <code>inst/assets/branding/</code> are used unmodified.</li>
+<strong>Header:</strong> official FAO 3-line English logo, 48 px, top left, not a link, light/dark files swapped by CSS; then the two-line title linking home (<code>{mocaredd}</code> over <code>.tr$app_title</code>). The subtitle hides below 992 px; <code>{mocaredd}</code> stays (tighter below 576 px) and hides below 388 px, where it no longer fits beside the menu button. Fixed 72 px navbar, <code>navbar-expand-xl</code>. Files in <code>inst/assets/branding/</code> are used unmodified.</li>
 <li>
 <strong>Footer:</strong> <code>app_footer()</code>: Global Goals icons (60 px), six fao.org links following the language (<code>data-href-&lt;lang&gt;</code>), app credit with <code><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">utils::packageVersion()</a></code> and AIM4Forests, © FAO.</li>
 <li>
